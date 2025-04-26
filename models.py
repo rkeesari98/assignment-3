@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Dict, List, Optional
 from uuid import UUID
 from pydantic import BaseModel
@@ -13,8 +14,12 @@ class User(BaseModel):
     About: Optional[str]
     Id: UUID
     
-class Post:
-    Id: UUID
+class Post(BaseModel):
+    Id:UUID
+    Username:str
+    Quote:str
+    Date:Optional[datetime] = None
+    Image:str
 
 
 class UserProfileUpdateInput(BaseModel):
@@ -22,3 +27,8 @@ class UserProfileUpdateInput(BaseModel):
     profile_name: str
     bio: Optional[str]
     profile_pic_url:Optional[str]
+
+
+class PostInput(BaseModel):
+    image_ref:str
+    caption:str

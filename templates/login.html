@@ -4,13 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PixelShare - Login</title>
-    <!-- Materialize CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-    <!-- Material Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <!-- Custom Styles -->
     <style>
         :root {
             --theme-primary: #5e35b1;
@@ -34,7 +30,6 @@
             margin: 0;
         }
         
-        /* Login container */
         .login-container {
             display: flex;
             flex-direction: row;
@@ -45,7 +40,6 @@
             align-items: center;
         }
         
-        /* Phone mockup (hidden on mobile) */
         .phone-container {
             display: none;
             position: relative;
@@ -62,7 +56,6 @@
             }
         }
         
-        /* Auth container */
         .auth-container {
             width: 100%;
             max-width: 350px;
@@ -166,7 +159,6 @@
             cursor: pointer;
         }
         
-        /* App download links */
         .app-links {
             margin-top: 20px;
             text-align: center;
@@ -187,7 +179,6 @@
             margin: 0 4px;
         }
         
-        /* Footer */
         footer {
             margin-top: auto;
             text-align: center;
@@ -220,12 +211,10 @@
             font-size: 12px;
         }
 
-        /* Show only the login form initially */
         #signup-form {
             display: none;
         }
 
-        /* Progress indicator */
         .progress {
             margin: 0;
             position: fixed;
@@ -241,7 +230,6 @@
             background-color: var(--theme-primary);
         }
         
-        /* Error message styling */
         .error-message {
             color: #ed4956;
             font-size: 14px;
@@ -250,7 +238,6 @@
             text-align: center;
         }
         
-        /* Hide elements with hidden class */
         .hidden {
             display: none !important;
         }
@@ -258,12 +245,10 @@
 </head>
 
 <body>
-    <!-- Progress indicator -->
     <div class="progress" id="auth-progress">
         <div class="indeterminate"></div>
     </div>
     
-    <!-- Login Box (Not visible to the user, but needed for firebase-login.js) -->
     <div id="login-box" class="hidden">
         <input type="email" id="email">
         <input type="password" id="password">
@@ -271,23 +256,17 @@
         <button id="sign-up">Sign Up</button>
     </div>
     
-    <!-- Sign Out Button (Hidden, needed for firebase-login.js) -->
     <button id="sign-out" class="hidden">Sign Out</button>
 
     <main class="login-container">
-        <!-- Left side phone mockup (hidden on mobile) -->
         <div class="phone-container">
-            <!-- Phone mockup with screenshot -->
             
         </div>
         
-        <!-- Right side authentication forms -->
         <div class="auth-container">
-            <!-- Main authentication card -->
             <div class="auth-card">
                 <h1 class="logo">PixelShare</h1>
                 
-                <!-- Login Form (shown by default) -->
                 <form class="auth-form" id="login-form">
                     <div class="error-message" id="login-error" style="display: none;"></div>
                     
@@ -310,7 +289,6 @@
                     <a href="#" class="forgot-password">Forgot password?</a>
                 </form>
                 
-                <!-- Signup Form (hidden by default) -->
                 <form class="auth-form" id="signup-form">
                     <div class="error-message" id="signup-error" style="display: none;"></div>
                     
@@ -338,7 +316,6 @@
                 </form>
             </div>
             
-            <!-- Switch between login/signup -->
             <div class="auth-card switch-card">
                 <p id="login-switch-text">
                     Don't have an account? <span class="switch-link" id="show-signup">Sign up</span>
@@ -348,7 +325,6 @@
                 </p>
             </div>
             
-            <!-- App download links -->
             <div class="app-links">
                 <p class="app-text">Get the app.</p>
                 <div class="app-images">
@@ -389,16 +365,13 @@
         </div>
     </footer>
 
-    <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     
-    <!-- Custom Auth UI Script -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             console.log("DOM loaded - Initializing Auth Page");
             
-            // Initialize UI elements
             const loginForm = document.getElementById('login-form');
             const signupForm = document.getElementById('signup-form');
             const loginBtn = document.getElementById('login-btn');
@@ -411,40 +384,34 @@
             const signupError = document.getElementById('signup-error');
             const progressIndicator = document.getElementById('auth-progress');
             
-            // Original Firebase auth form elements (hidden)
             const firebaseEmail = document.getElementById('email');
             const firebasePassword = document.getElementById('password');
             const firebaseLoginBtn = document.getElementById('login');
             const firebaseSignupBtn = document.getElementById('sign-up');
             
-            // Input fields for UI forms
             const loginEmail = document.getElementById('login-email');
             const loginPassword = document.getElementById('login-password');
             const signupEmail = document.getElementById('signup-email');
             
             const signupPassword = document.getElementById('signup-password');
             
-            // Enable/disable login button based on input
             function validateLoginForm() {
                 const email = loginEmail.value.trim();
                 const password = loginPassword.value.trim();
                 loginBtn.disabled = !(email && password);
             }
             
-            // Enable/disable signup button based on input
             function validateSignupForm() {
                 const email = signupEmail.value.trim();
                 const password = signupPassword.value.trim();
                 signupBtn.disabled = !(email && password);
             }
             
-            // Input validation
             loginEmail.addEventListener('input', validateLoginForm);
             loginPassword.addEventListener('input', validateLoginForm);
             signupEmail.addEventListener('input', validateSignupForm);
             signupPassword.addEventListener('input', validateSignupForm);
             
-            // Switch between login and signup forms
             showSignupLink.addEventListener('click', (e) => {
                 e.preventDefault();
                 loginForm.style.display = 'none';
@@ -465,7 +432,6 @@
                 signupError.style.display = 'none';
             });
             
-            // Login button click handler
             loginBtn.addEventListener('click', () => {
                 const email = loginEmail.value.trim();
                 const password = loginPassword.value.trim();
@@ -476,20 +442,16 @@
                     return;
                 }
                 
-                // Show loading indicator
                 progressIndicator.style.display = 'block';
                 loginBtn.disabled = true;
                 
-                // Transfer values to the hidden form and trigger the click
                 firebaseEmail.value = email;
                 firebasePassword.value = password;
                 firebaseLoginBtn.click();
                 
-                // Add error handling for when firebase auth fails
-                // This event listener will check for error messages added by firebase-login.js
+ 
                 setTimeout(() => {
                     if (document.cookie.indexOf("token=") === -1) {
-                        // If no token set after timeout, assume login failed
                         loginError.textContent = "Login failed. Please check your email and password.";
                         loginError.style.display = 'block';
                         progressIndicator.style.display = 'none';
@@ -498,7 +460,6 @@
                 }, 3000);
             });
             
-            // Signup button click handler
             signupBtn.addEventListener('click', () => {
                 const email = signupEmail.value.trim();
                 const password = signupPassword.value.trim();
@@ -515,21 +476,16 @@
                     return;
                 }
                 
-                // Show loading indicator
                 progressIndicator.style.display = 'block';
                 signupBtn.disabled = true;
                 
-                // Save additional user data to localStorage to be used after signup
                 
-                // Transfer values to the hidden form and trigger the click
                 firebaseEmail.value = email;
                 firebasePassword.value = password;
                 firebaseSignupBtn.click();
                 
-                // Add error handling for when firebase auth fails
                 setTimeout(() => {
                     if (document.cookie.indexOf("token=") === -1) {
-                        // If no token set after timeout, assume signup failed
                         signupError.textContent = "Sign up failed. This email may already be in use.";
                         signupError.style.display = 'block';
                         progressIndicator.style.display = 'none';
@@ -538,7 +494,6 @@
                 }, 3000);
             });
             
-            // Enter key on login form
             loginForm.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') {
                     e.preventDefault();
@@ -548,7 +503,6 @@
                 }
             });
             
-            // Enter key on signup form
             signupForm.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') {
                     e.preventDefault();
@@ -558,7 +512,6 @@
                 }
             });
             
-            // Check if the user is already logged in
             if (document.cookie.indexOf("token=") !== -1) {
                 window.location.href = '/';
             }

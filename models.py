@@ -15,3 +15,10 @@ class User(BaseModel):
     
 class Post:
     Id: UUID
+
+
+class UserProfileUpdateInput(BaseModel):
+    username: str
+    profile_name: str
+    bio: Optional[str]
+    profile_pic_url:Optional[str]

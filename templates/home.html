@@ -1279,23 +1279,19 @@ function handleProfileSetup(e) {
     const bioInput = document.getElementById('bio');
     const profilePicUpload = document.getElementById('profile-pic-upload');
     const submitBtn = document.getElementById('save-profile-btn');
-    const errorDisplay = document.getElementById('profile-setup-error');
     
-    errorDisplay.classList.add('hidden');
-    usernameInput.classList.remove('invalid');
-    
+    // Basic validation
     if (!usernameInput.value.trim()) {
         usernameInput.classList.add('invalid');
-        M.toast({html: 'Username is required', classes: 'red'});
         return;
     }
     
     if (!profileNameInput.value.trim()) {
         profileNameInput.classList.add('invalid');
-        M.toast({html: 'Profile name is required', classes: 'red'});
         return;
     }
     
+    // Disable submit button and show loading indicator
     submitBtn.disabled = true;
     const originalBtnText = submitBtn.textContent;
     submitBtn.innerHTML = '<div class="preloader-wrapper small active" style="width: 20px; height: 20px;"><div class="spinner-layer spinner-white-only"><div class="circle-clipper left"><div class="circle"></div></div><div class="gap-patch"><div class="circle"></div></div><div class="circle-clipper right"><div class="circle"></div></div></div></div> Saving...';
@@ -1323,35 +1319,52 @@ function handleProfileSetup(e) {
             
             if (result.status === true) {
                 window.profileSetupComplete = true;
-                M.toast({html: 'Profile setup complete!', classes: 'green'});
-                
                 setTimeout(() => {
                     window.location.href = '/';
                 }, 1000);
             } else {
-                if (result.error === 'username_taken') {
-                    usernameInput.classList.add('invalid');
-                    M.toast({html: 'Username is already taken', classes: 'red'});
-                } else {
-                    errorDisplay.textContent = result.message || 'Failed to update profile';
-                    errorDisplay.classList.remove('hidden');
-                    M.toast({html: 'Failed to update profile', classes: 'red'});
+                // Display error message from backend
+                if (result.message || result.error) {
+                    const errorMessage = result.message || result.error;
+                    
+                    // Create a simple error message element if it doesn't exist
+                    let errorEl = document.getElementById('simple-error-message');
+                    if (!errorEl) {
+                        errorEl = document.createElement('div');
+                        errorEl.id = 'simple-error-message';
+                        errorEl.style.color = '#f44336';
+                        errorEl.style.padding = '10px 0';
+                        errorEl.style.fontSize = '14px';
+                        
+                        // Insert it after the username field
+                        const usernameField = document.getElementById('username').closest('.input-field');
+                        usernameField.parentNode.insertBefore(errorEl, usernameField.nextSibling);
+                    }
+                    
+                    // Set the error message
+                    errorEl.textContent = errorMessage;
+                    
+                    // Highlight username field if it's a username error
+                    if (errorMessage.toLowerCase().includes('username')) {
+                        usernameInput.classList.add('invalid');
+                        usernameInput.focus();
+                    }
                 }
                 
+                // Re-enable the submit button
                 submitBtn.disabled = false;
                 submitBtn.textContent = originalBtnText;
             }
         } catch (error) {
             console.error('Error updating profile:', error);
-            errorDisplay.textContent = 'An unexpected error occurred';
-            errorDisplay.classList.remove('hidden');
-            M.toast({html: 'Failed to update profile', classes: 'red'});
             
+            // Re-enable the submit button
             submitBtn.disabled = false;
             submitBtn.textContent = originalBtnText;
         }
     };
     
+    // Handle profile picture upload if present
     if (profilePicUpload.files.length > 0) {
         const imageData = new FormData();
         imageData.append('file_name', profilePicUpload.files[0]);
@@ -1371,9 +1384,20 @@ function handleProfileSetup(e) {
         })
         .catch(error => {
             console.error('Error uploading profile picture:', error);
-            errorDisplay.textContent = 'Failed to upload profile picture';
-            errorDisplay.classList.remove('hidden');
-            M.toast({html: 'Failed to upload profile picture', classes: 'red'});
+            
+            let errorEl = document.getElementById('simple-error-message');
+            if (!errorEl) {
+                errorEl = document.createElement('div');
+                errorEl.id = 'simple-error-message';
+                errorEl.style.color = '#f44336';
+                errorEl.style.padding = '10px 0';
+                errorEl.style.fontSize = '14px';
+                
+                const usernameField = document.getElementById('username').closest('.input-field');
+                usernameField.parentNode.insertBefore(errorEl, usernameField.nextSibling);
+            }
+            
+            errorEl.textContent = error.message || 'Failed to upload profile picture';
             
             submitBtn.disabled = false;
             submitBtn.textContent = originalBtnText;

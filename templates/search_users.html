@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PixelShare - Discover People</title>
+    <!-- Materialize CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Custom Styles -->
+    <style>
+        :root {
+            --theme-primary: #5e35b1;
+            --theme-primary-light: #9162e4;
+            --theme-primary-dark: #280680;
+            --theme-secondary: #26a69a;
+            --theme-text-dark: #424242;
+            --theme-text-light: #757575;
+            --theme-background: #f5f5f5;
+            --theme-card: #ffffff;
+            --theme-border: #e0e0e0;
+        }
+        
+        body {
+            background-color: var(--theme-background);
+            color: var(--theme-text-dark);
+            font-family: 'Roboto', sans-serif;
+        }
+        
+        nav {
+            background-color: var(--theme-card);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        nav .brand-logo {
+            color: var(--theme-primary);
+            font-weight: 700;
+        }
+        
+        .main-container {
+            margin-top: 20px;
+            padding-bottom: 40px;
+        }
+        
+        /* User Cards */
+        .user-card {
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            background-color: var(--theme-card);
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+        
+        .user-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        
+        .user-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 16px;
+            border: 2px solid var(--theme-primary-light);
+        }
+        
+        .user-info {
+            flex-grow: 1;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            margin: 0;
+            color: var(--theme-text-dark);
+            text-decoration: none;
+        }
+        
+        .user-username {
+            color: var(--theme-text-light);
+            margin: 4px 0 0;
+            font-size: 14px;
+        }
+        
+        .user-bio {
+            margin: 6px 0 0;
+            font-size: 14px;
+            color: var(--theme-text-dark);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .mutual-followers {
+            font-size: 12px;
+            color: var(--theme-primary);
+            margin-top: 6px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .mutual-followers i {
+            font-size: 14px;
+            margin-right: 4px;
+        }
+        
+        .follow-btn {
+            min-width: 90px;
+            height: 36px;
+            border-radius: 18px;
+            text-transform: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        
+        .follow-btn.following {
+            background-color: transparent;
+            color: var(--theme-text-dark);
+            border: 1px solid var(--theme-border);
+        }
+        
+        .follow-btn.follow {
+            background-color: var(--theme-primary);
+        }
+        
+        /* Search Styles */
+        .search-box {
+            position: relative;
+            margin-bottom: 16px;
+        }
+        
+        .search-input {
+            height: 50px;
+            border-radius: 25px !important;
+            padding-left: 50px !important;
+            box-sizing: border-box;
+            font-size: 16px;
+            border: 1px solid var(--theme-border) !important;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05) !important;
+        }
+        
+        .search-input:focus {
+            border-color: var(--theme-primary) !important;
+            box-shadow: 0 2px 10px rgba(94, 53, 177, 0.2) !important;
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--theme-text-light);
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background-color: var(--theme-card);
+            border-radius: 8px;
+        }
+        
+        .empty-state-icon {
+            font-size: 64px;
+            color: var(--theme-text-light);
+            margin-bottom: 20px;
+        }
+        
+        /* Loader */
+        .loader-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 0;
+        }
+        
+        /* Skeleton loader */
+        .skeleton {
+            background-color: #f0f0f0;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .skeleton::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                        rgba(255, 255, 255, 0),
+                        rgba(255, 255, 255, 0.2),
+                        rgba(255, 255, 255, 0));
+            animation: shimmer 1.5s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .skeleton-user-card {
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            background-color: var(--theme-card);
+        }
+        
+        .skeleton-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            margin-right: 16px;
+        }
+        
+        .skeleton-info {
+            flex-grow: 1;
+        }
+        
+        .skeleton-line {
+            height: 12px;
+            margin-bottom: 8px;
+            width: 80%;
+        }
+        
+        .skeleton-line.small {
+            width: 40%;
+        }
+        
+        .skeleton-button {
+            width: 90px;
+            height: 36px;
+            border-radius: 18px;
+        }
+        
+        /* Hidden class */
+        .hidden {
+            display: none;
+        }
+        
+        /* Mobile responsive adjustments */
+        @media only screen and (max-width: 600px) {
+            .follow-btn {
+                min-width: 70px;
+            }
+            
+            .user-card {
+                padding: 12px;
+            }
+            
+            .user-avatar {
+                width: 50px;
+                height: 50px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <div class="navbar-fixed">
+        <nav>
+            <div class="nav-wrapper container">
+                <a href="/" class="brand-logo">PixelShare</a>
+                <a href="#" data-target="mobile-nav" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+                <ul class="right hide-on-med-and-down">
+                    <li><a href="/"><i class="material-icons">home</i></a></li>
+                    <li><a href="/explore" class="active"><i class="material-icons">explore</i></a></li>
+                    <li><a href="/create"><i class="material-icons">add_box</i></a></li>
+                    <li><a href="/profile"><i class="material-icons">person</i></a></li>
+                    <li><a href="#" id="desktop-logout" class="hidden"><i class="material-icons">exit_to_app</i></a></li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+    
+    <!-- Mobile Navigation -->
+    <ul class="sidenav" id="mobile-nav">
+        <li><a href="/"><i class="material-icons">home</i>Home</a></li>
+        <li><a href="/explore"><i class="material-icons">explore</i>Explore</a></li>
+        <li><a href="/create"><i class="material-icons">add_box</i>Create Post</a></li>
+        <li><a href="/profile"><i class="material-icons">person</i>Profile</a></li>
+        <li><div class="divider"></div></li>
+        <li><a href="#" id="mobile-logout" class="hidden"><i class="material-icons">exit_to_app</i>Sign Out</a></li>
+    </ul>
+
+    <!-- Main Content -->
+    <div class="container main-container">
+        <div class="row">
+            <div class="col s12">
+                <!-- Header -->
+                <div class="section">
+                    <h4 class="header">
+                        {% if mode == 'search' %}
+                            Search Users
+                        {% elif mode == 'followers' %}
+                            <div class="valign-wrapper">
+                                <a href="/profile/{{ profile_username }}" class="btn-flat waves-effect">
+                                    <i class="material-icons">arrow_back</i>
+                                </a>
+                                <span class="ml-2" style="margin-left: 8px;">Followers</span>
+                            </div>
+                        {% elif mode == 'following' %}
+                            <div class="valign-wrapper">
+                                <a href="/profile/{{ profile_username }}" class="btn-flat waves-effect">
+                                    <i class="material-icons">arrow_back</i>
+                                </a>
+                                <span class="ml-2" style="margin-left: 8px;">Following</span>
+                            </div>
+                        {% endif %}
+                    </h4>
+                </div>
+                
+                <!-- Tabs for Followers/Following Mode -->
+                {% if mode == 'followers' or mode == 'following' %}
+                <div class="row">
+                    <div class="col s12">
+                        <ul class="tabs">
+                            <li class="tab col s6">
+                                <a href="/followers/" class="{% if mode == 'followers' %}active{% endif %}">
+                                    Followers
+                                </a>
+                            </li>
+                            <li class="tab col s6">
+                                <a href="/following/" class="{% if mode == 'following' %}active{% endif %}">
+                                    Following
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Search/Filter Section -->
+                <div class="filter-tabs section">
+                    <!-- Search Box -->
+                    <div class="search-box">
+                        <i class="material-icons search-icon">search</i>
+                        <input type="text" id="search-input" class="search-input" placeholder="{{ search_placeholder|default('Search users...') }}">
+                    </div>
+                </div>
+                
+                <!-- User List -->
+                <div class="section" id="user-list-container">
+                    <div id="loading-indicator" class="loader-container hidden">
+                        <div class="preloader-wrapper small active">
+                            <div class="spinner-layer spinner-blue-only">
+                                <div class="circle-clipper left">
+                                    <div class="circle"></div>
+                                </div>
+                                <div class="gap-patch">
+                                    <div class="circle"></div>
+                                </div>
+                                <div class="circle-clipper right">
+                                    <div class="circle"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="user-list">
+                        {% if users %}
+                            {% for user in users %}
+                            <div class="user-card" data-username="{{ user.Username }}">
+                                <img src="/images/file_name={{ user.profile_pic_url | urlencode }}" class="user-avatar" alt="{{ user.Username }}">
+                                <div class="user-info">
+                                    <a href="/profile/{{ user.Username }}" class="user-name">{{ user.Profile_Name }}</a>
+                                    <p class="user-username">@{{ user.Username }}</p>
+                                    {% if user.Bio %}
+                                    <p class="user-bio">{{ user.Bio }}</p>
+                                    {% endif %}
+                                    {% if user.mutual_count and user.mutual_count > 0 %}
+                                    <div class="mutual-followers">
+                                        <i class="material-icons tiny">people</i>
+                                        {{ user.mutual_count }} mutual followers
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                {% if current_user.Username != user.Username %}
+                                <button class="btn waves-effect waves-light follow-btn {{ 'following' if user.is_following else 'follow' }}" 
+                                        data-username="{{ user.Username }}">
+                                    {{ 'Following' if user.is_following else 'Follow' }}
+                                </button>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div id="empty-state" class="empty-state">
+                                <i class="material-icons empty-state-icon">
+                                    {% if mode == 'search' %}
+                                        search
+                                    {% else %}
+                                        people
+                                    {% endif %}
+                                </i>
+                                <h5>
+                                    {% if mode == 'search' %}
+                                        Search for users
+                                    {% elif mode == 'followers' %}
+                                        No followers yet
+                                    {% elif mode == 'following' %}
+                                        Not following anyone yet
+                                    {% endif %}
+                                </h5>
+                                <p class="grey-text">
+                                    {% if mode == 'search' %}
+                                        Find people to follow and connect with
+                                    {% elif mode == 'followers' %}
+                                        When people follow {{ profile_username }}, they'll appear here.
+                                    {% elif mode == 'following' %}
+                                        When {{ profile_username }} follows people, they'll appear here.
+                                    {% endif %}
+                                </p>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div id="no-results" class="empty-state hidden">
+                        <i class="material-icons empty-state-icon">sentiment_dissatisfied</i>
+                        <h5>No Results Found</h5>
+                        <p class="grey-text">We couldn't find any users matching your search.</p>
+                    </div>
+                    
+                    <!-- Load More Button -->
+                    {% if users and has_more %}
+                    <div class="center-align" style="margin-top: 20px;" id="load-more-container">
+                        <button class="btn waves-effect waves-light" id="load-more-btn" style="background-color: var(--theme-primary);" data-page="2">
+                            Load More
+                        </button>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/3.0.1/js.cookie.min.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Materialize components
+            M.AutoInit();
+            
+            // Constants
+            const mode = '{{ mode }}';
+            const searchInput = document.getElementById('search-input');
+            const userList = document.getElementById('user-list');
+            const loadMoreBtn = document.getElementById('load-more-btn');
+            const loadingIndicator = document.getElementById('loading-indicator');
+            const emptyState = document.getElementById('empty-state');
+            const noResults = document.getElementById('no-results');
+            
+            let isSearching = false;
+            let currentPage = 1;
+            
+            // Handle search input
+            if (searchInput) {
+                if (mode === 'followers' || mode === 'following') {
+                    // For followers or following mode, filter the existing list
+                    searchInput.addEventListener('input', filterUsers);
+                } else if (mode === 'search') {
+                    // For search mode, debounce and search with API
+                    let searchTimeout;
+                    searchInput.addEventListener('input', function() {
+                        clearTimeout(searchTimeout);
+                        searchTimeout = setTimeout(performSearch, 500);
+                    });
+                    
+                    // Also search on Enter key
+                    searchInput.addEventListener('keypress', function(e) {
+                        if (e.key === 'Enter') {
+                            clearTimeout(searchTimeout);
+                            performSearch();
+                        }
+                    });
+                }
+            }
+            
+            // Load more button
+            if (loadMoreBtn) {
+                loadMoreBtn.addEventListener('click', function() {
+                    if (isSearching) return;
+                    
+                    currentPage = parseInt(this.dataset.page);
+                    loadMoreUsers();
+                });
+            }
+            
+            // Follow/unfollow buttons
+            setupFollowButtons();
+            
+            // Function to filter users in the current list (for followers/following mode)
+            function filterUsers() {
+                const searchValue = searchInput.value.toLowerCase();
+                const userCards = userList.querySelectorAll('.user-card');
+                
+                let visibleCount = 0;
+                
+                userCards.forEach(card => {
+                    const name = card.querySelector('.user-name').textContent.toLowerCase();
+                    const username = card.querySelector('.user-username').textContent.toLowerCase();
+                    const bio = card.querySelector('.user-bio')?.textContent.toLowerCase() || '';
+                    
+                    if (name.includes(searchValue) || username.includes(searchValue) || bio.includes(searchValue)) {
+                        card.style.display = '';
+                        visibleCount++;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+                
+                // Show/hide empty state
+                if (visibleCount === 0 && searchValue) {
+                    // No results for search
+                    if (emptyState) emptyState.style.display = 'none';
+                    if (noResults) noResults.style.display = 'block';
+                } else if (visibleCount === 0) {
+                    // No users at all
+                    if (emptyState) emptyState.style.display = 'block';
+                    if (noResults) noResults.style.display = 'none';
+                } else {
+                    // Has results
+                    if (emptyState) emptyState.style.display = 'none';
+                    if (noResults) noResults.style.display = 'none';
+                }
+            }
+            
+            // Function to perform search with API (for search mode)
+            function performSearch() {
+                if (isSearching || mode !== 'search') return;
+                
+                const query = searchInput.value.trim();
+                currentPage = 1;
+                isSearching = true;
+                
+                // Show loading, hide other states
+                if (loadingIndicator) loadingIndicator.classList.remove('hidden');
+                if (emptyState) emptyState.style.display = 'none';
+                if (noResults) noResults.classList.add('hidden');
+                if (userList) userList.innerHTML = createSkeletonLoaders(5);
+                if (loadMoreBtn) loadMoreBtn.parentElement.style.display = 'none';
+                
+                // Build search parameters
+                const params = new URLSearchParams();
+                if (query) params.append('query', query);
+                params.append('page', currentPage);
+                
+                // Perform search
+                fetch(`/api/search?${params.toString()}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (loadingIndicator) loadingIndicator.classList.add('hidden');
+                        
+                        if (data.users && data.users.length > 0) {
+                            renderUsers(data.users, data.has_more);
+                        } else {
+                            userList.innerHTML = '';
+                            
+                            if (query) {
+                                noResults.classList.remove('hidden');
+                            } else {
+                                emptyState.style.display = 'block';
+                            }
+                        }
+                        
+                        isSearching = false;
+                    })
+                    .catch(error => {
+                        console.error('Search error:', error);
+                        
+                        if (loadingIndicator) loadingIndicator.classList.add('hidden');
+                        userList.innerHTML = '';
+                        
+                        // Show error state
+                        const errorState = document.createElement('div');
+                        errorState.className = 'empty-state';
+                        errorState.innerHTML = `
+                            <i class="material-icons empty-state-icon" style="color: #f44336;">error_outline</i>
+                            <h5>Error</h5>
+                            <p class="grey-text">An error occurred while searching. Please try again.</p>
+                            <button class="btn waves-effect waves-light red" onclick="window.location.reload()">
+                                Retry
+                            </button>
+                        `;
+                        userList.appendChild(errorState);
+                        
+                        isSearching = false;
+                    });
+            }
+            
+            // Function to load more users
+            function loadMoreUsers() {
+                if (isSearching) return;
+                isSearching = true;
+                
+                if (loadMoreBtn) {
+                    loadMoreBtn.disabled = true;
+                    loadMoreBtn.innerHTML = '<i class="material-icons left">hourglass_empty</i>Loading...';
+                }
+                
+                // Build search parameters
+                const params = new URLSearchParams();
+                const query = searchInput.value.trim();
+                if (query) params.append('query', query);
+                params.append('page', currentPage);
+                
+                fetch(`/api/search?${params.toString()}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.users && data.users.length > 0) {
+                            appendUsers(data.users, data.has_more);
+                        }
+                        
+                        isSearching = false;
+                        
+                        if (loadMoreBtn) {
+                            loadMoreBtn.disabled = false;
+                            loadMoreBtn.innerHTML = 'Load More';
+                            loadMoreBtn.dataset.page = currentPage + 1;
+                            
+                            if (!data.has_more) {
+                                loadMoreBtn.parentElement.style.display = 'none';
+                            }
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Load more error:', error);
+                        isSearching = false;
+                        
+                        if (loadMoreBtn) {
+                            loadMoreBtn.disabled = false;
+                            loadMoreBtn.innerHTML = 'Retry';
+                        }
+                        
+                        M.toast({html: 'Failed to load more users. Please try again.', classes: 'red'});
+                    });
+            }
+            
+            // Function to render users list
+            function renderUsers(users, hasMore) {
+                userList.innerHTML = '';
+                
+                users.forEach(user => {
+                    const userCard = createUserCard(user);
+                    userList.appendChild(userCard);
+                });
+                
+                // Show/hide load more button
+                if (loadMoreBtn) {
+                    if (hasMore) {
+                        loadMoreBtn.parentElement.style.display = 'block';
+                        loadMoreBtn.dataset.page = currentPage + 1;
+                    } else {
+                        loadMoreBtn.parentElement.style.display = 'none';
+                    }
+                }
+                
+                setupFollowButtons();
+            }
+            
+            // Function to append users to existing list
+            function appendUsers(users, hasMore) {
+                users.forEach(user => {
+                    const userCard = createUserCard(user);
+                    userList.appendChild(userCard);
+                });
+                
+                setupFollowButtons();
+            }
+            
+            // Function to create a user card element
+            function createUserCard(user) {
+                const isCurrentUser = user.Username === '{{ current_username }}';
+                
+                const userCard = document.createElement('div');
+                userCard.className = 'user-card';
+                userCard.dataset.username = user.Username;
+                
+                userCard.innerHTML = `
+                    <img src="/images/file_name=${encodeURIComponent(user.profile_pic_url || '')}" 
+                         class="user-avatar" alt="${user.Username}">
+                    <div class="user-info">
+                        <a href="/profile/${user.Username}" class="user-name">${user.Profile_Name || user.Username}</a>
+                        <p class="user-username">@${user.Username}</p>
+                        ${user.Bio ? `<p class="user-bio">${user.Bio}</p>` : ''}
+                        ${user.mutual_count && user.mutual_count > 0 ? `
+                        <div class="mutual-followers">
+                            <i class="material-icons tiny">people</i>
+                            ${user.mutual_count} mutual followers
+                        </div>` : ''}
+                    </div>
+                    ${!isCurrentUser ? `
+                    <button class="btn waves-effect waves-light follow-btn ${user.is_following ? 'following' : 'follow'}" 
+                            data-username="${user.Username}">
+                        ${user.is_following ? 'Following' : 'Follow'}
+                    </button>` : ''}
+                `;
+                
+                return userCard;
+            }
+            
+            // Function to create skeleton loaders
+            function createSkeletonLoaders(count) {
+                let html = '';
+                
+                for (let i = 0; i < count; i++) {
+                    html += `
+                        <div class="skeleton-user-card">
+                            <div class="skeleton skeleton-avatar"></div>
+                            <div class="skeleton-info">
+                                <div class="skeleton skeleton-line"></div>
+                                <div class="skeleton skeleton-line small"></div>
+                            </div>
+                            <div class="skeleton skeleton-button"></div>
+                        </div>
+                    `;
+                }
+                
+                return html;
+            }
+            
+            // Function to setup follow buttons
+            function setupFollowButtons() {
+                document.querySelectorAll('.follow-btn:not([data-initialized])').forEach(button => {
+                    button.setAttribute('data-initialized', 'true');
+                    
+                    button.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        
+                        const username = this.dataset.username;
+                        const isFollowing = this.classList.contains('following');
+                        
+                        // Disable to prevent multiple clicks
+                        this.disabled = true;
+                        
+                        // Optimistic UI update
+                        if (isFollowing) {
+                            this.textContent = 'Follow';
+                            this.classList.remove('following');
+                            this.classList.add('follow');
+                        } else {
+                            this.textContent = 'Following';
+                            this.classList.remove('follow');
+                            this.classList.add('following');
+                        }
+                        
+                        // API call
+                        fetch(`/follow/${username}`, {
+                            method: isFollowing ? 'DELETE' : 'POST',
+                            headers: { 'Content-Type': 'application/json' }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (!data.success) {
+                                throw new Error(data.message || 'Failed to update follow status');
+                            }
+                            
+                            // Show success toast
+                            M.toast({
+                                html: isFollowing ? `Unfollowed @${username}` : `Following @${username}`,
+                                classes: 'green'
+                            });
+                        })
+                        .catch(error => {
+                            console.error('Follow/unfollow error:', error);
+                            
+                            // Revert UI
+                            if (isFollowing) {
+                                this.textContent = 'Following';
+                                this.classList.remove('follow');
+                                this.classList.add('following');
+                            } else {
+                                this.textContent = 'Follow';
+                                this.classList.remove('following');
+                                this.classList.add('follow');
+                            }
+                            
+                            M.toast({html: error.message, classes: 'red'});
+                        })
+                        .finally(() => {
+                            this.disabled = false;
+                        });
+                    });
+                });
+                
+                // Make whole card clickable to go to profile
+                document.querySelectorAll('.user-card').forEach(card => {
+                    card.addEventListener('click', function(e) {
+                        // Don't trigger if clicking on follow button or link
+                        if (e.target.closest('.follow-btn') || e.target.closest('a')) {
+                            return;
+                        }
+                        
+                        const username = this.dataset.username;
+                        window.location.href = `/profile/${username}`;
+                    });
+                });
+            }
+        });
+    </script>
+</body>
+</html>

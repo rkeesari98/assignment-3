@@ -1,12 +1,14 @@
+import datetime
 from uuid import UUID, uuid4
 import uuid
 from google.auth.transport import requests
 import google.oauth2.id_token
 from fastapi import Request
 from google.cloud import firestore
+from pydantic import Json
 import starlette.status as status
 
-from models import User, UserProfileUpdateInput
+from models import Comment, PostSend, User, UserProfileUpdateInput
 
 
 firestore_db = firestore.Client()
@@ -119,4 +121,184 @@ class UserService:
             print(str(error))
             raise Exception(str(error))
 
-            
+
+    @staticmethod
+    def get_all_posts(current_user: User, profile_username: str):
+        try:
+            post_docs = firestore_db.collection("Post") \
+                .where("Username", "==", profile_username) \
+                .order_by("Date", direction=firestore.Query.DESCENDING) \
+                .stream()
+
+            post_list = []
+
+            # Fetch profile user once outside loop
+            user_result = firestore_db.collection("User").where("Username", "==", profile_username).limit(1).stream()
+            user_docs = list(user_result)
+            user_info = user_docs[0].to_dict() if user_docs else {}
+
+            for doc in post_docs:
+                post_data = doc.to_dict()
+
+                # Convert UUID to string
+                post_data["Id"] = str(post_data.get("Id", ""))
+                post_data["Date"] = post_data.get("Date")
+
+                post_instance = PostSend(**post_data)
+                post_instance.User_Pic = user_info.get("Profile_Pic", "default_user.jpeg")
+
+                # Convert date to isoformat if it's a datetime object
+                if isinstance(post_instance.Date, datetime.datetime):
+
+                    post_instance.Date = post_instance.Date.isoformat()
+
+                # Fetch comments for post
+                comment_query = firestore_db.collection("Comment").where("PostId", "==", str(post_instance.Id)).stream()
+                post_instance.Comments = [Comment(**c.to_dict()) for c in comment_query]
+
+                post_list.append(post_instance)
+            if not user_info:
+                raise Exception("Profile not found.")
+
+            is_following = any(
+                entry.get("Username") == profile_username
+                for entry in getattr(current_user, "Following", [])
+            )
+
+            return {
+                "profile": user_info,
+                "profile_username": profile_username,
+                "profile_name": user_info.get("Display_Name", profile_username),
+                "bio": user_info.get("About", ""),
+                "profile_pic_url": user_info.get("Profile_Pic", "default_user.jpeg"),
+                "is_following": is_following,
+                "is_own_profile": current_user.Username == profile_username,
+                "posts": post_list,
+            }
+
+        except Exception as error:
+            print("[UserService] Error in get_all_posts:", error)
+            raise Exception(str(error))
+
+    @staticmethod
+    def follow_user(user: User, target_username: str) -> Json:
+        try:
+            target_snapshot = next(
+                firestore_db.collection("User").where("Username", "==", target_username).stream(),
+                None
+            )
+            if not target_snapshot:
+                raise Exception("The user you are trying to follow does not exist.")
+
+            target_user = User(**target_snapshot.to_dict())
+
+            already_following = any(
+                entry.get("Username") == target_username 
+                for entry in user.Following
+            )
+            if already_following:
+                raise Exception("You are already following this user.")
+
+            timestamp = datetime.datetime.now().isoformat()
+            user.Following.append({"Username": target_username, "Date": timestamp})
+            target_user.Followers.append({"Username": user.Username, "Date": timestamp})
+
+            firestore_db.collection("User").document(str(user.Id)).update({
+                "Following": user.Following
+            })
+            firestore_db.collection("User").document(str(target_user.Id)).update({
+                "Followers": target_user.Followers
+            })
+
+            return {"message": "success"}
+        except Exception as error:
+            print(f"Error during follow: {error}")
+            raise Exception(str(error))
+
+
+    @staticmethod
+    def search_users(user: User, search_term: str):
+        try:
+            # Normalize the search term
+            normalized_term = search_term.lower()
+            search_range_end = normalized_term + u'\uf8ff'
+
+            # Reference the user collection and apply the range query on Profile_Name
+            user_collection = firestore_db.collection('User')
+            matching_users = user_collection \
+                .where("Profile_Name", ">=", normalized_term) \
+                .where("Profile_Name", "<=", search_range_end) \
+                .stream()
+
+            results = []
+
+            # Prepare a set of usernames the current user is already following
+            followed_usernames = set(
+                entry.get("Username") for entry in user.Following
+            ) if user.Following else set()
+
+            for doc in matching_users:
+                user_data = doc.to_dict()
+                candidate_username = user_data.get("Username", "")
+
+                # Skip if the user is the one making the request
+                if candidate_username == user.Username:
+                    continue
+
+                results.append({
+                    "Username": candidate_username,
+                    "Profile_Name": user_data.get("Profile_Name", ""),
+                    "Bio": user_data.get("Bio", ""),
+                    "profile_pic_url": user_data.get("Profile_Pic_Url", "default_user.jpeg"),
+                    "is_following": candidate_username in followed_usernames
+                })
+
+            return results
+        except Exception as err:
+            print("Error occurred during user search:", err)
+            raise Exception(str(err))
+
+
+
+    @staticmethod
+    def unfollow_user(current_user: User, target_username: str) -> Json:
+        try:
+            # Fetch the user to unfollow from Firestore
+            target_snapshot = next(
+                firestore_db.collection("User")
+                .where("Username", "==", target_username)
+                .stream(),
+                None
+            )
+
+            if not target_snapshot:
+                raise Exception("The specified user does not exist.")
+
+            target_user = User(**target_snapshot.to_dict())
+
+            # Filter out the target user from the current user's following list
+            current_user.Following = [
+                entry for entry in current_user.Following 
+                if entry.get("Username") != target_username
+            ]
+
+            # Filter out the current user from the target user's followers list
+            target_user.Followers = [
+                entry for entry in target_user.Followers 
+                if entry.get("Username") != current_user.Username
+            ]
+
+            # Commit updates to Firestore
+            firestore_db.collection("User").document(str(current_user.Id)).update({
+                "Following": current_user.Following
+            })
+
+            firestore_db.collection("User").document(str(target_user.Id)).update({
+                "Followers": target_user.Followers
+            })
+
+            return {"message": "success"}
+
+        except Exception as error:
+            print(f"Error while unfollowing: {error}")
+            raise Exception(str(error))

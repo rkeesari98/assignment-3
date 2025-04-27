@@ -1,4 +1,4 @@
-from fastapi import Request, UploadFile
+from fastapi import Request, Response, UploadFile
 from google.cloud import firestore,storage
 
 import local_constants
@@ -33,4 +33,21 @@ class FileService:
             raise Exception(e)
         
 
-        
+    
+    @staticmethod
+    def downloadBlob(filename):
+        try:
+            storage_client = storage.Client(project=local_constants.PROJECT_NAME)
+            bucket = storage_client.bucket(local_constants.PROJECT_STORAGE_BUCKET)
+            blob = bucket.get_blob(filename)
+            return blob.download_as_bytes()
+        except Exception as e:
+            raise Exception(e)
+
+
+    @staticmethod
+    async def download_file(filename:str):
+        try:
+            return Response(FileService.downloadBlob(filename))
+        except Exception as e:
+            raise Exception(str(e))

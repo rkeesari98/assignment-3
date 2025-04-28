@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PixelShare - Profile</title>
+    <!-- Materialize CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Custom Styles -->
+    <style>
+        :root {
+            --theme-primary: #5e35b1;
+            --theme-primary-light: #9162e4;
+            --theme-primary-dark: #280680;
+            --theme-secondary: #26a69a;
+            --theme-text-dark: #424242;
+            --theme-text-light: #757575;
+            --theme-background: #f5f5f5;
+            --theme-card: #ffffff;
+            --theme-border: #e0e0e0;
+        }
+        
+        body {
+            background-color: var(--theme-background);
+            color: var(--theme-text-dark);
+            font-family: 'Roboto', sans-serif;
+        }
+        
+        nav {
+            background-color: var(--theme-card);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        nav .brand-logo {
+            color: var(--theme-primary);
+            font-weight: 700;
+        }
+        
+        .main-container {
+            margin-top: 20px;
+            padding-bottom: 40px;
+        }
+        
+        /* Profile Header Styles */
+        .profile-header {
+            padding: 30px;
+            background-color: var(--theme-card);
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+        
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid var(--theme-primary);
+            object-fit: cover;
+        }
+        
+        .profile-name {
+            font-weight: 600;
+            margin: 10px 0 5px;
+        }
+        
+        .profile-username {
+            color: var(--theme-text-light);
+            margin: 0 0 15px;
+        }
+        
+        .profile-bio {
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        
+        .profile-website {
+            color: var(--theme-primary);
+            word-break: break-all;
+        }
+        
+        .profile-stats {
+            display: flex;
+            justify-content: space-between;
+            text-align: center;
+            max-width: 400px;
+            margin: 20px 0;
+        }
+        
+        .profile-stat {
+            cursor: pointer;
+        }
+        
+        .profile-stat-number {
+            font-weight: 600;
+            font-size: 18px;
+            margin: 0;
+        }
+        
+        .profile-stat-label {
+            color: var(--theme-text-light);
+            margin: 5px 0 0;
+        }
+        
+        .profile-actions {
+            margin-top: 20px;
+        }
+        
+        .btn-follow {
+            background-color: var(--theme-primary);
+        }
+        
+        .btn-edit-profile {
+            background-color: transparent;
+            color: var(--theme-text-dark);
+            border: 1px solid var(--theme-border);
+        }
+        
+        .btn-message {
+            background-color: transparent;
+            color: var(--theme-text-dark);
+            border: 1px solid var(--theme-border);
+        }
+        
+        /* Gallery Styles */
+        .gallery-tabs {
+            background-color: var(--theme-card);
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+        
+        .tabs .tab a {
+            color: var(--theme-primary-light);
+        }
+        
+        .tabs .tab a:hover, .tabs .tab a.active {
+            color: var(--theme-primary);
+        }
+        
+        .tabs .indicator {
+            background-color: var(--theme-primary);
+        }
+        
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+        
+        .gallery-item {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        
+        .gallery-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+        
+        .gallery-item:hover .gallery-image {
+            transform: scale(1.05);
+        }
+        
+        .gallery-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .gallery-item:hover .gallery-overlay {
+            opacity: 1;
+        }
+        
+        .gallery-stats {
+            display: flex;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .gallery-stat {
+            display: flex;
+            align-items: center;
+            margin: 0 10px;
+        }
+        
+        .gallery-stat i {
+            margin-right: 5px;
+        }
+        
+        .empty-gallery {
+            text-align: center;
+            padding: 50px 20px;
+            background-color: var(--theme-card);
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .empty-gallery-icon {
+            font-size: 64px;
+            color: var(--theme-text-light);
+            margin-bottom: 20px;
+        }
+        
+        .saved-gallery, .tagged-gallery {
+            display: none;
+        }
+        
+        /* Sidenav styles */
+        .sidenav {
+            width: 250px;
+        }
+        
+        .sidenav li > a {
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            height: 50px;
+        }
+        
+        .sidenav li > a > i {
+            margin-right: 16px;
+        }
+        
+        /* Auth and loader styles */
+        .auth-pending {
+            visibility: hidden;
+        }
+        
+        .progress {
+            margin: 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            z-index: 9999;
+            display: none;
+        }
+        
+        .progress .indeterminate {
+            background-color: var(--theme-primary);
+        }
+        
+        /* Mobile responsive adjustments */
+        @media only screen and (max-width: 992px) {
+            .profile-header {
+                padding: 20px;
+            }
+            
+            .profile-avatar {
+                width: 100px;
+                height: 100px;
+            }
+        }
+        
+        @media only screen and (max-width: 600px) {
+            .gallery-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 5px;
+            }
+            
+            .profile-stats {
+                flex-wrap: wrap;
+            }
+            
+            .profile-stat {
+                flex: 0 0 33.33%;
+                margin-bottom: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Preloader -->
+    <div class="progress" id="page-loader">
+        <div class="indeterminate"></div>
+    </div>
+    
+    <!-- Navigation -->
+    <div class="navbar-fixed">
+        <nav>
+            <div class="nav-wrapper container">
+                <a href="/" class="brand-logo">PixelShare</a>
+                <a href="#" data-target="mobile-nav" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+                <ul class="right hide-on-med-and-down">
+                    <li><a href="/"><i class="material-icons">home</i></a></li>
+                    <li><a href="/explore"><i class="material-icons">explore</i></a></li>
+                    <li><a href="/create"><i class="material-icons">add_box</i></a></li>
+                    <li><a href="/profile" class="active"><i class="material-icons">person</i></a></li>
+                    <li><a href="#" id="desktop-logout" class="hidden"><i class="material-icons">exit_to_app</i></a></li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+    
+    <!-- Mobile Navigation -->
+    <ul class="sidenav" id="mobile-nav">
+        <li>
+            <div class="user-view">
+                <div class="background" style="background-color: var(--theme-primary);"></div>
+                <a href="/profile"><img class="circle" id="sidenav-user-image" src="/static/default-profile.jpg"></a>
+                <a href="/profile"><span class="white-text name" id="sidenav-username">Guest User</span></a>
+                <a href="#"><span class="white-text email" id="sidenav-email">Not signed in</span></a>
+            </div>
+        </li>
+        <li><a href="/"><i class="material-icons">home</i>Home</a></li>
+        <li><a href="/explore"><i class="material-icons">explore</i>Explore</a></li>
+        <li><a href="/create"><i class="material-icons">add_box</i>Create Post</a></li>
+        <li><a href="/profile"><i class="material-icons">person</i>Profile</a></li>
+        <li><div class="divider"></div></li>
+        <li><a href="#" id="mobile-logout" class="hidden"><i class="material-icons">exit_to_app</i>Sign Out</a></li>
+    </ul>
+    
+    <!-- Authentication Modal -->
+    <div id="auth-modal" class="modal auth-pending">
+        <div class="modal-content">
+            <h4>Sign In</h4>
+            <p>Please sign in to continue using PixelShare</p>
+            
+            <div class="row">
+                <div class="input-field col s12">
+                    <i class="material-icons prefix">email</i>
+                    <input id="email" type="email" class="validate">
+                    <label for="email">Email</label>
+                </div>
+                <div class="input-field col s12">
+                    <i class="material-icons prefix">lock</i>
+                    <input id="password" type="password" class="validate">
+                    <label for="password">Password</label>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button id="login-btn" class="btn waves-effect waves-light" style="background-color: var(--theme-primary);">Sign In</button>
+            <div class="center-align">
+                <span>or</span>
+            </div>
+            <button id="signup-btn" class="btn waves-effect waves-light" style="background-color: transparent; border: 1px solid var(--theme-primary); color: var(--theme-primary);">Sign Up</button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container main-container">
+        <div class="row" id="content">
+            <!-- Profile Header -->
+            <div class="col s12">
+                <div class="profile-header">
+                    <div class="row valign-wrapper">
+                        <div class="col s12 m4 center-align">
+                            <div class="position-relative">
+                                <img src="/images/file_name={{ profile_pic_url | urlencode }}" 
+                                     alt="{{ profile_username }}" class="profile-avatar">
+                                
+                                {% if is_own_profile %}
+                                <div class="position-absolute" style="position: absolute; bottom: 0; right: 0;">
+                                    <a href="/edit_profile" class="btn-floating btn-small" style="background-color: var(--theme-primary);">
+                                        <i class="material-icons">edit</i>
+                                    </a>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col s12 m8">
+                            <div class="row">
+                                <div class="col s12">
+                                    <div class="d-flex" style="display: flex; align-items: center; justify-content: space-between;">
+                                        <h4 class="profile-name">
+                                            {% if is_own_profile %}
+                                            {{ profile.Profile_Name }}
+                                            {% else %}
+                                            {{ profile.Profile_Name }}
+                                            {% endif %}
+                                        </h4>
+                                        
+                                        <div class="profile-actions" style="margin-top: 0;">
+                                            {% if is_own_profile %}
+                                            <a href="/edit_profile" class="btn waves-effect waves-light btn-edit-profile hide-on-small-only">
+                                                Edit Profile
+                                            </a>
+                                            <a href="/create" class="btn waves-effect waves-light" style="background-color: var(--theme-primary);">
+                                                Create Post
+                                            </a>
+                                            {% else %}
+                                            <button id="follow-button" 
+                                                    class="btn waves-effect waves-light {{ 'btn-edit-profile' if is_following else 'btn-follow' }}" 
+                                                    data-username="{{ profile_username }}">
+                                                {{ 'Following' if is_following else 'Follow' }}
+                                            </button>
+                                            <button class="btn waves-effect waves-light btn-message hide-on-small-only">
+                                                Message
+                                            </button>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    
+                                    <h6 class="profile-username">@{{ profile_username }}</h6>
+                                    
+                                    <div class="profile-stats">
+                                        <div class="profile-stat">
+                                            <p class="profile-stat-number">{{ posts | length }}</p>
+                                            <p class="profile-stat-label">Posts</p>
+                                        </div>
+                                        <div class="profile-stat" id="followers-stat">
+                                            <p class="profile-stat-number">{{ profile.Followers | length if profile.Followers else 0 }}</p>
+                                            <p class="profile-stat-label">Followers</p>
+                                        </div>
+                                        <div class="profile-stat" id="following-stat">
+                                            <p class="profile-stat-number">{{ profile.Following | length if profile.Following else 0 }}</p>
+                                            <p class="profile-stat-label">Following</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="profile-bio">{{ bio }}</div>
+                                    
+                                    {% if website %}
+                                    <a href="{{ website }}" target="_blank" class="profile-website">{{ website }}</a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Gallery Tabs -->
+            <div class="col s12">
+                <div class="gallery-tabs">
+                    <ul class="tabs">
+                        <li class="tab col s4"><a href="#posts-gallery" class="active">
+                            <i class="material-icons tiny">grid_on</i> Posts
+                        </a></li>
+                        <li class="tab col s4"><a href="#saved-gallery">
+                            <i class="material-icons tiny">bookmark_border</i> Saved
+                        </a></li>
+                        <li class="tab col s4"><a href="#tagged-gallery">
+                            <i class="material-icons tiny">person_pin</i> Tagged
+                        </a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Posts Gallery -->
+            <div id="posts-gallery" class="col s12">
+                {% if posts %}
+                <div class="gallery-grid">
+                    {% for post in posts %}
+                    <a href="/post/{{ post.Id }}" class="gallery-item">
+                        <img src="/images/file_name={{ post.Image | urlencode }}" 
+                             alt="Post image" class="gallery-image">
+                        <div class="gallery-overlay">
+                            <div class="gallery-stats">
+                                <div class="gallery-stat">
+                                    <i class="material-icons">favorite</i>
+                                    <span>{{ post.likes|default(0) }}</span>
+                                </div>
+                                <div class="gallery-stat">
+                                    <i class="material-icons">chat_bubble</i>
+                                    <span>{{ post.comments|length|default(0) }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-gallery">
+                    <i class="material-icons empty-gallery-icon">photo_camera</i>
+                    <h5>No Posts Yet</h5>
+                    {% if is_own_profile %}
+                    <p class="grey-text">Share photos and videos that will appear on your profile</p>
+                    <a href="/create" class="btn waves-effect waves-light" style="background-color: var(--theme-primary); margin-top: 20px;">
+                        Share Your First Photo
+                    </a>
+                    {% else %}
+                    <p class="grey-text">When {{ profile_username }} shares photos, you'll see them here.</p>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Saved Gallery -->
+            <div id="saved-gallery" class="col s12">
+                <div class="empty-gallery">
+                    <i class="material-icons empty-gallery-icon">bookmark</i>
+                    <h5>Save</h5>
+                    <p class="grey-text">Save photos and videos that you want to see again.</p>
+                </div>
+            </div>
+            
+            <!-- Tagged Gallery -->
+            <div id="tagged-gallery" class="col s12">
+                <div class="empty-gallery">
+                    <i class="material-icons empty-gallery-icon">person_pin</i>
+                    <h5>Photos of you</h5>
+                    <p class="grey-text">When people tag you in photos, they'll appear here.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Followers Modal -->
+    <div id="followers-modal" class="modal">
+        <div class="modal-content">
+            <h5>Followers</h5>
+            <div class="input-field">
+                <i class="material-icons prefix">search</i>
+                <input type="text" id="followers-search" placeholder="Search followers">
+            </div>
+            <ul class="collection" id="followers-list">
+                <!-- Followers will be loaded here -->
+            </ul>
+        </div>
+        <div class="modal-footer">
+            <a href="#!" class="modal-close waves-effect waves-green btn-flat">Close</a>
+        </div>
+    </div>
+    
+    <!-- Following Modal -->
+    <div id="following-modal" class="modal">
+        <div class="modal-content">
+            <h5>Following</h5>
+            <div class="input-field">
+                <i class="material-icons prefix">search</i>
+                <input type="text" id="following-search" placeholder="Search following">
+            </div>
+            <ul class="collection" id="following-list">
+                <!-- Following users will be loaded here -->
+            </ul>
+        </div>
+        <div class="modal-footer">
+            <a href="#!" class="modal-close waves-effect waves-green btn-flat">Close</a>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <!-- Scripts - Correct Order -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/3.0.1/js.cookie.min.js"></script>
+<script type="module" src="/static/firebase-login.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Materialize components
+            var elems = document.querySelectorAll('.sidenav');
+        var instances = M.Sidenav.init(elems);
+            M.AutoInit();
+            
+            // Follow/Unfollow functionality
+            const followButton = document.getElementById('follow-button');
+            if (followButton) {
+                followButton.addEventListener('click', function() {
+                    const username = this.getAttribute('data-username');
+                    const isFollowing = this.textContent.trim() === 'Following';
+                    
+                    // Change button appearance
+                    if (isFollowing) {
+                        this.textContent = 'Follow';
+                        this.classList.remove('btn-edit-profile');
+                        this.classList.add('btn-follow');
+                    } else {
+                        this.textContent = 'Following';
+                        this.classList.remove('btn-follow');
+                        this.classList.add('btn-edit-profile');
+                    }
+                    
+                    // Send request to server
+                    fetch(`/follow/${username}`, {
+                        method: isFollowing ? 'DELETE' : 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            // Update follower count
+                            const followerCountEl = document.querySelector('#followers-stat .profile-stat-number');
+                            if (followerCountEl) {
+                                let count = parseInt(followerCountEl.textContent);
+                                followerCountEl.textContent = isFollowing ? count - 1 : count + 1;
+                            }
+                            
+                            M.toast({html: data.message, classes: 'green'});
+                        } else {
+                            throw new Error(data.message || 'Failed to update follow status');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Follow/unfollow error:', error);
+                        
+                        // Revert button state on error
+                        if (isFollowing) {
+                            this.textContent = 'Following';
+                            this.classList.remove('btn-follow');
+                            this.classList.add('btn-edit-profile');
+                        } else {
+                            this.textContent = 'Follow';
+                            this.classList.remove('btn-edit-profile');
+                            this.classList.add('btn-follow');
+                        }
+                        
+                        M.toast({html: error.message, classes: 'red'});
+                    });
+                });
+            }
+            
+            // Followers/Following modal handling
+            const followersStatEl = document.getElementById('followers-stat');
+            const followingStatEl = document.getElementById('following-stat');
+            
+            if (followersStatEl) {
+                followersStatEl.addEventListener('click', function() {
+                    openFollowersModal();
+                });
+            }
+            
+            if (followingStatEl) {
+                followingStatEl.addEventListener('click', function() {
+                    openFollowingModal();
+                });
+            }
+            
+            // Search functionality for followers & following lists
+            document.getElementById('followers-search').addEventListener('input', function() {
+                filterList('followers-list', this.value);
+            });
+            
+            document.getElementById('following-search').addEventListener('input', function() {
+                filterList('following-list', this.value);
+            });
+            
+            // Function to filter followers/following lists
+            function filterList(listId, query) {
+                const list = document.getElementById(listId);
+                const items = list.querySelectorAll('li');
+                const searchTerm = query.toLowerCase();
+                
+                items.forEach(item => {
+                    const username = item.querySelector('.title').textContent.toLowerCase();
+                    const name = item.querySelector('.subtitle') ? 
+                                 item.querySelector('.subtitle').textContent.toLowerCase() : '';
+                    
+                    if (username.includes(searchTerm) || name.includes(searchTerm)) {
+                        item.style.display = '';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+                
+                // Show "no results" message if all items are hidden
+                let noResultsMsg = list.querySelector('.no-results');
+                const hasVisibleItems = Array.from(items).some(item => item.style.display !== 'none');
+                
+                if (!hasVisibleItems && searchTerm) {
+                    if (!noResultsMsg) {
+                        noResultsMsg = document.createElement('li');
+                        noResultsMsg.className = 'collection-item no-results center-align';
+                        noResultsMsg.innerHTML = '<span class="grey-text">No results found</span>';
+                        list.appendChild(noResultsMsg);
+                    }
+                } else if (noResultsMsg) {
+                    list.removeChild(noResultsMsg);
+                }
+            }
+            
+            // Function to open followers modal and load data
+            function openFollowersModal() {
+                const modal = document.getElementById('followers-modal');
+                const instance = M.Modal.getInstance(modal);
+                const followersList = document.getElementById('followers-list');
+                
+                // Clear previous list and search
+                followersList.innerHTML = '<div class="center-align" style="padding: 20px;"><div class="preloader-wrapper small active"><div class="spinner-layer spinner-blue-only"><div class="circle-clipper left"><div class="circle"></div></div><div class="gap-patch"><div class="circle"></div></div><div class="circle-clipper right"><div class="circle"></div></div></div></div></div>';
+                document.getElementById('followers-search').value = '';
+                
+                // Open modal
+                instance.open();
+                
+                // Fetch followers
+                fetch(`/profile/{{ profile_username }}/followers`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (!data.followers) {
+                            throw new Error('No followers data returned');
+                        }
+                        
+                        if (data.followers.length === 0) {
+                            followersList.innerHTML = '<li class="collection-item center-align"><span class="grey-text">No followers yet</span></li>';
+                            return;
+                        }
+                        
+                        followersList.innerHTML = '';
+                        
+                        data.followers.forEach(follower => {
+                            const li = document.createElement('li');
+                            li.className = 'collection-item avatar';
+                            
+                            const isCurrentUser = follower.username === '{{ current_username }}';
+                            
+                            li.innerHTML = `
+                                <img src="/images/file_name=${encodeURIComponent(follower.profile_pic || '')}" class="circle" alt="${follower.username}">
+                                <span class="title"><a href="/profile/${follower.username}" class="black-text">${follower.username}</a></span>
+                                <p class="subtitle grey-text">${follower.profile_name || ''}</p>
+                                ${!isCurrentUser ? `
+                                <a href="#!" class="secondary-content follow-toggle ${follower.is_following ? 'is-following' : ''}">
+                                    ${follower.is_following ? 'Following' : 'Follow'}
+                                </a>` : ''}
+                            `;
+                            
+                            followersList.appendChild(li);
+                        });
+                        
+                        // Add follow toggle functionality
+                        document.querySelectorAll('#followers-list .follow-toggle').forEach(btn => {
+                            btn.addEventListener('click', function(e) {
+                                e.preventDefault();
+                                
+                                const username = this.closest('li').querySelector('.title a').textContent;
+                                const isFollowing = this.classList.contains('is-following');
+                                
+                                // Change button appearance
+                                if (isFollowing) {
+                                    this.textContent = 'Follow';
+                                    this.classList.remove('is-following');
+                                } else {
+                                    this.textContent = 'Following';
+                                    this.classList.add('is-following');
+                                }
+                                
+                                // Send request to server
+                                fetch(`/follow/${username}`, {
+                                    method: isFollowing ? 'DELETE' : 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    }
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (!data.success) {
+                                        throw new Error(data.message || 'Failed to update follow status');
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Follow/unfollow error:', error);
+                                    
+                                    // Revert button state on error
+                                    if (isFollowing) {
+                                        this.textContent = 'Following';
+                                        this.classList.add('is-following');
+                                    } else {
+                                        this.textContent = 'Follow';
+                                        this.classList.remove('is-following');
+                                    }
+                                    
+                                    M.toast({html: error.message, classes: 'red'});
+                                });
+                            });
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error fetching followers:', error);
+                        followersList.innerHTML = '<li class="collection-item center-align"><span class="red-text">Failed to load followers. Please try again.</span></li>';
+                    });
+            }
+            
+            // Function to open following modal and load data
+            function openFollowingModal() {
+                const modal = document.getElementById('following-modal');
+                const instance = M.Modal.getInstance(modal);
+                const followingList = document.getElementById('following-list');
+                
+                // Clear previous list and search
+                followingList.innerHTML = '<div class="center-align" style="padding: 20px;"><div class="preloader-wrapper small active"><div class="spinner-layer spinner-blue-only"><div class="circle-clipper left"><div class="circle"></div></div><div class="gap-patch"><div class="circle"></div></div><div class="circle-clipper right"><div class="circle"></div></div></div></div></div>';
+                document.getElementById('following-search').value = '';
+                
+                // Open modal
+                instance.open();
+                
+                // Fetch following
+                fetch(`/profile/{{ profile_username }}/following`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (!data.following) {
+                            throw new Error('No following data returned');
+                        }
+                        
+                        if (data.following.length === 0) {
+                            followingList.innerHTML = '<li class="collection-item center-align"><span class="grey-text">Not following anyone yet</span></li>';
+                            return;
+                        }
+                        
+                        followingList.innerHTML = '';
+                        
+                        data.following.forEach(followed => {
+                            const li = document.createElement('li');
+                            li.className = 'collection-item avatar';
+                            
+                            const isCurrentUser = followed.username === '{{ current_username }}';
+                            
+                            li.innerHTML = `
+                                <img src="/images/file_name=${encodeURIComponent(followed.profile_pic || '')}" class="circle" alt="${followed.username}">
+                                <span class="title"><a href="/profile/${followed.username}" class="black-text">${followed.username}</a></span>
+                                <p class="subtitle grey-text">${followed.profile_name || ''}</p>
+                                ${!isCurrentUser ? `
+                                <a href="#!" class="secondary-content follow-toggle is-following">
+                                    Following
+                                </a>` : ''}
+                            `;
+                            
+                            followingList.appendChild(li);
+                        });
+                        
+                        // Add follow toggle functionality
+                        document.querySelectorAll('#following-list .follow-toggle').forEach(btn => {
+                            btn.addEventListener('click', function(e) {
+                                e.preventDefault();
+                                
+                                const username = this.closest('li').querySelector('.title a').textContent;
+                                const isFollowing = this.classList.contains('is-following');
+                                
+                                // Change button appearance
+                                if (isFollowing) {
+                                    this.textContent = 'Follow';
+                                    this.classList.remove('is-following');
+                                } else {
+                                    this.textContent = 'Following';
+                                    this.classList.add('is-following');
+                                }
+                                
+                                // Send request to server
+                                fetch(`/follow/${username}`, {
+                                    method: isFollowing ? 'DELETE' : 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    }
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (!data.success) {
+                                        throw new Error(data.message || 'Failed to update follow status');
+                                    }
+                                    
+                                    // Update following count if unfollowing
+                                    if (isFollowing) {
+                                        const followingCountEl = document.querySelector('#following-stat .profile-stat-number');
+                                        if (followingCountEl) {
+                                            let count = parseInt(followingCountEl.textContent);
+                                            followingCountEl.textContent = count - 1;
+                                        }
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Follow/unfollow error:', error);
+                                    
+                                    // Revert button state on error
+                                    if (isFollowing) {
+                                        this.textContent = 'Following';
+                                        this.classList.add('is-following');
+                                    } else {
+                                        this.textContent = 'Follow';
+                                        this.classList.remove('is-following');
+                                    }
+                                    
+                                    M.toast({html: error.message, classes: 'red'});
+                                });
+                            });
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error fetching following:', error);
+                        followingList.innerHTML = '<li class="collection-item center-align"><span class="red-text">Failed to load following. Please try again.</span></li>';
+                    });
+            }
+        });
+    </script>
+</body>
+</html>

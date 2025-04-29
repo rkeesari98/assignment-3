@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PixelShare - Post</title>
+    <!-- Materialize CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Custom Styles -->
+    <style>
+        :root {
+            --theme-primary: #5e35b1;
+            --theme-primary-light: #9162e4;
+            --theme-primary-dark: #280680;
+            --theme-secondary: #26a69a;
+            --theme-text-dark: #424242;
+            --theme-text-light: #757575;
+            --theme-background: #f5f5f5;
+            --theme-card: #ffffff;
+            --theme-border: #e0e0e0;
+        }
+        
+        body {
+            background-color: var(--theme-background);
+            color: var(--theme-text-dark);
+            font-family: 'Roboto', sans-serif;
+        }
+        
+        nav {
+            background-color: var(--theme-card);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        nav .brand-logo {
+            color: var(--theme-primary);
+            font-weight: 700;
+        }
+        
+        .main-container {
+            margin-top: 20px;
+            padding-bottom: 40px;
+            min-height: calc(100vh - 80px);
+            display: flex;
+        }
+        
+        /* Post Detail Styles */
+        .post-detail-card {
+            display: flex;
+            flex-direction: column;
+            border-radius: 12px;
+            overflow: hidden;
+            background-color: var(--theme-card);
+            height: fit-content;
+            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.08);
+        }
+        
+        .image-container {
+            position: relative;
+            background-color: #000;
+            min-height: 300px;
+            max-height: 70vh;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .post-image {
+            max-width: 100%;
+            max-height: 70vh;
+            object-fit: contain;
+        }
+        
+        .post-details-container {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+        
+        .post-header {
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--theme-border);
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 12px;
+            object-fit: cover;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            margin: 0;
+            color: var(--theme-text-dark);
+        }
+        
+        .post-time {
+            color: var(--theme-text-light);
+            font-size: 12px;
+            margin-top: 2px;
+        }
+        
+        .post-actions {
+            padding: 16px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .post-action {
+            margin-right: 16px;
+            cursor: pointer;
+            color: var(--theme-text-dark);
+            transition: all 0.2s;
+        }
+        
+        .post-action:hover {
+            transform: scale(1.1);
+        }
+        
+        .post-action.active {
+            color: var(--theme-primary);
+        }
+        
+        .post-likes {
+            font-weight: 600;
+            margin: 0 16px 16px;
+        }
+        
+        .post-caption {
+            padding: 0 16px 16px;
+            border-bottom: 1px solid var(--theme-border);
+        }
+        
+        .post-caption-username {
+            font-weight: 600;
+            margin-right: 6px;
+        }
+        
+        .post-location {
+            display: flex;
+            align-items: center;
+            color: var(--theme-primary);
+            font-size: 14px;
+            margin-top: 8px;
+        }
+        
+        .post-location i {
+            font-size: 16px;
+            margin-right: 4px;
+        }
+        
+        .comments-section {
+            flex: 1;
+            overflow-y: auto;
+            max-height: 50vh;
+            padding: 16px;
+        }
+        
+        .no-comments {
+            text-align: center;
+            padding: 20px 0;
+            color: var(--theme-text-light);
+        }
+        
+        .comment-item {
+            display: flex;
+            margin-bottom: 16px;
+        }
+        
+        .comment-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            margin-right: 12px;
+            object-fit: cover;
+        }
+        
+        .comment-content {
+            flex: 1;
+        }
+        
+        .comment-username {
+            font-weight: 600;
+            margin-right: 8px;
+            font-size: 14px;
+        }
+        
+        .comment-text {
+            margin: 0;
+            font-size: 14px;
+            word-break: break-word;
+        }
+        
+        .comment-timestamp {
+            font-size: 12px;
+            color: var(--theme-text-light);
+            margin-top: 4px;
+        }
+        
+        .comment-form {
+            padding: 16px;
+            border-top: 1px solid var(--theme-border);
+            display: flex;
+            align-items: center;
+        }
+        
+        .comment-input {
+            flex: 1;
+            border: none !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            height: auto !important;
+            resize: none;
+        }
+        
+        .comment-input:focus {
+            border-bottom: none !important;
+            box-shadow: none !important;
+        }
+        
+        .comment-submit {
+            color: var(--theme-primary);
+            background: none;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 0 8px;
+            font-size: 14px;
+        }
+        
+        .comment-submit:disabled {
+            color: var(--theme-text-light);
+            cursor: default;
+        }
+        
+        /* Related Posts Styles */
+        .related-posts-card {
+            padding: 16px;
+            border-radius: 12px;
+            background-color: var(--theme-card);
+            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.08);
+            margin-bottom: 20px;
+        }
+        
+        .related-posts-title {
+            font-weight: 600;
+            margin-top: 0;
+            margin-bottom: 16px;
+            font-size: 18px;
+        }
+        
+        .related-post-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+            cursor: pointer;
+            transition: transform 0.2s;
+            text-decoration: none;
+            color: var(--theme-text-dark);
+        }
+        
+        .related-post-item:hover {
+            transform: translateX(5px);
+        }
+        
+        .related-post-image {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            object-fit: cover;
+            margin-right: 12px;
+        }
+        
+        .related-post-info {
+            flex: 1;
+        }
+        
+        .related-post-username {
+            font-weight: 600;
+            font-size: 14px;
+            margin: 0;
+        }
+        
+        .related-post-caption {
+            color: var(--theme-text-light);
+            font-size: 13px;
+            margin: 4px 0 0;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        /* Sidenav styles */
+        .sidenav {
+            width: 250px;
+        }
+        
+        .sidenav li > a {
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            height: 50px;
+        }
+        
+        .sidenav li > a > i {
+            margin-right: 16px;
+        }
+        
+        /* Auth and loader styles */
+        .auth-pending {
+            visibility: hidden;
+        }
+        
+        .progress {
+            margin: 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            z-index: 9999;
+            display: none;
+        }
+        
+        .progress .indeterminate {
+            background-color: var(--theme-primary);
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .post-detail-container {
+                max-width: 100%;
+                flex-basis: 100%;
+            }
+            
+            .related-posts-container {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .post-detail-card {
+                border-radius: 0;
+                margin: -20px;
+                width: calc(100% + 40px);
+            }
+            
+            .comments-section {
+                max-height: 40vh;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Preloader -->
+    <div class="progress" id="page-loader">
+        <div class="indeterminate"></div>
+    </div>
+    
+    <!-- Navigation -->
+    <div class="navbar-fixed">
+        <nav>
+            <div class="nav-wrapper container">
+                <a href="/" class="brand-logo">PixelShare</a>
+                <a href="#" data-target="mobile-nav" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+                <ul class="right hide-on-med-and-down">
+                    <li><a href="/"><i class="material-icons">home</i></a></li>
+                    <li><a href="/explore"><i class="material-icons">explore</i></a></li>
+                    <li><a href="/create"><i class="material-icons">add_box</i></a></li>
+                    <li><a href="/profile"><i class="material-icons">person</i></a></li>
+                    <li><a href="#" id="desktop-logout" class="hidden"><i class="material-icons">exit_to_app</i></a></li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+    
+    <!-- Mobile Navigation -->
+    <ul class="sidenav" id="mobile-nav">
+        <li>
+            <div class="user-view">
+                <div class="background" style="background-color: var(--theme-primary);"></div>
+                <a href="/profile"><img class="circle" id="sidenav-user-image" src="/static/default-profile.jpg"></a>
+                <a href="/profile"><span class="white-text name" id="sidenav-username">Guest User</span></a>
+                <a href="#"><span class="white-text email" id="sidenav-email">Not signed in</span></a>
+            </div>
+        </li>
+        <li><a href="/"><i class="material-icons">home</i>Home</a></li>
+        <li><a href="/explore"><i class="material-icons">explore</i>Explore</a></li>
+        <li><a href="/create"><i class="material-icons">add_box</i>Create Post</a></li>
+        <li><a href="/profile"><i class="material-icons">person</i>Profile</a></li>
+        <li><div class="divider"></div></li>
+        <li><a href="#" id="mobile-logout" class="hidden"><i class="material-icons">exit_to_app</i>Sign Out</a></li>
+    </ul>
+    
+    <!-- Authentication Modal -->
+    <div id="auth-modal" class="modal auth-pending">
+        <div class="modal-content">
+            <h4>Sign In</h4>
+            <p>Please sign in to continue using PixelShare</p>
+            
+            <div class="row">
+                <div class="input-field col s12">
+                    <i class="material-icons prefix">email</i>
+                    <input id="email" type="email" class="validate">
+                    <label for="email">Email</label>
+                </div>
+                <div class="input-field col s12">
+                    <i class="material-icons prefix">lock</i>
+                    <input id="password" type="password" class="validate">
+                    <label for="password">Password</label>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button id="login-btn" class="btn waves-effect waves-light" style="background-color: var(--theme-primary);">Sign In</button>
+            <div class="center-align">
+                <span>or</span>
+            </div>
+            <button id="signup-btn" class="btn waves-effect waves-light" style="background-color: transparent; border: 1px solid var(--theme-primary); color: var(--theme-primary);">Sign Up</button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container main-container">
+        <div class="row" id="content">
+            <!-- Post Detail Column -->
+            <div class="col s12 l8 post-detail-container">
+                <div class="post-detail-card">
+                    <!-- Image Section -->
+                    <div class="image-container">
+                        <img src="/images/file_name={{ post.Image_ref | urlencode }}" class="post-image" alt="Post image">
+                    </div>
+                    
+                    <div class="post-details-container">
+                        <!-- Post Header -->
+                        <div class="post-header">
+                            <a href="/profile/{{ post.Username }}">
+                                <img src="/images/file_name={{ post.User_Pic | urlencode }}" alt="{{ post.Username }}" class="user-avatar">
+                            </a>
+                            <div>
+                                <a href="/profile/{{ post.Username }}" class="user-name">{{ post.Username }}</a>
+                                <div class="post-time" data-timestamp="{{ post.Date }}">{{ post.Date }}</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Post Actions -->
+                        <div class="post-actions">
+                            <i class="material-icons post-action like-action {% if post.user_has_liked %}active{% endif %}">
+                                {% if post.user_has_liked %}favorite{% else %}favorite_border{% endif %}
+                            </i>
+                            <i class="material-icons post-action comment-action">chat_bubble_outline</i>
+                            <i class="material-icons post-action share-action">send</i>
+                            <i class="material-icons post-action bookmark-action right">bookmark_border</i>
+                        </div>
+                        
+                        <!-- Post Likes -->
+                        <div class="post-likes">
+                            {{ post.Likes if post.Likes else 0 }} likes
+                        </div>
+                        
+                        <!-- Post Caption -->
+                        <div class="post-caption">
+                            <span class="post-caption-username">{{ post.Username }}</span>
+                            <span>{{ post.Caption }}</span>
+                            
+                            {% if post.Location %}
+                            <div class="post-location">
+                                <i class="material-icons tiny">place</i>
+                                <span>{{ post.Location }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Comments Section -->
+                        <div class="comments-section">
+                            {% if post.Comments %}
+                            {% set sorted_comments = post.Comments|sort(attribute='Date', reverse=True) %}
+                            {% for comment in sorted_comments %}
+                            <div class="comment-item">
+                                <a href="/profile/{{ comment.Username }}">
+                                    <img src="/images/file_name={{ comment.User_Pic | urlencode }}" alt="{{ comment.Username }}" class="comment-avatar">
+                                </a>
+                                <div class="comment-content">
+                                    <p class="comment-text">
+                                        <a href="/profile/{{ comment.Username }}" class="comment-username">{{ comment.Username }}</a>
+                                        {{ comment.Text }}
+                                    </p>
+                                    <div class="comment-timestamp" data-timestamp="{{ comment.Date }}">{{ comment.Date }}</div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                            {% else %}
+                            <div class="no-comments">
+                                <p>No comments yet. Be the first to comment!</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Comment Form -->
+                        <form class="comment-form" id="comment-form">
+                            <input type="text" class="comment-input" id="comment-input" placeholder="Add a comment..." maxlength="200">
+                            <button type="submit" class="comment-submit" id="comment-submit" disabled>Post</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Related Posts Column -->
+            <div class="col l4 related-posts-container">
+                <div class="related-posts-card">
+                    <h5 class="related-posts-title">More from {{ post.Username }}</h5>
+                    
+                    {% if user_posts %}
+                    <div class="related-posts-list">
+                        {% for related_post in user_posts %}
+                        {% if related_post.Id != post.Id %}
+                        <a href="/post/{{ related_post.Id }}" class="related-post-item">
+                            <img src="/images/file_name={{ related_post.Image_ref | urlencode }}" 
+                                class="related-post-image" alt="Related post">
+                            <div class="related-post-info">
+                                <p class="related-post-username">{{ related_post.Username }}</p>
+                                <p class="related-post-caption">{{ related_post.Caption }}</p>
+                            </div>
+                        </a>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="grey-text center-align">No other posts from this user</p>
+                    {% endif %}
+                </div>
+                
+                <div class="related-posts-card">
+                    <h5 class="related-posts-title">Suggested Posts</h5>
+                    
+                    {% if suggested_posts %}
+                    <div class="related-posts-list">
+                        {% for suggested_post in suggested_posts %}
+                        <a href="/post/{{ suggested_post.Id }}" class="related-post-item">
+                            <img src="/images/file_name={{ suggested_post.Image_ref | urlencode }}" 
+                                class="related-post-image" alt="Suggested post">
+                            <div class="related-post-info">
+                                <p class="related-post-username">{{ suggested_post.Username }}</p>
+                                <p class="related-post-caption">{{ suggested_post.Caption }}</p>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="grey-text center-align">No suggested posts available</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/3.0.1/js.cookie.min.js"></script>
+    <script type="module" src="/static/firebase-login.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Materialize components
+            M.AutoInit();
+            
+            // Format timestamps
+            formatTimestamps();
+            setInterval(formatTimestamps, 60000); // Update every minute
+            
+            // Handle like action
+            const likeAction = document.querySelector('.like-action');
+            if (likeAction) {
+                likeAction.addEventListener('click', function() {
+                    const isLiked = this.textContent.trim() === 'favorite';
+                    const postId = '{{ post.Id }}';
+                    const likeCountEl = document.querySelector('.post-likes');
+                    let likeCount = parseInt(likeCountEl.textContent);
+                    
+                    if (isLiked) {
+                        // Unlike
+                        this.textContent = 'favorite_border';
+                        this.classList.remove('active');
+                        likeCount--;
+                        
+                        fetch(`/api/posts/${postId}/like`, { 
+                            method: 'DELETE',
+                            headers: { 'Content-Type': 'application/json' }
+                        })
+                        .catch(error => {
+                            console.error('Error unliking post:', error);
+                            // Revert UI
+                            this.textContent = 'favorite';
+                            this.classList.add('active');
+                            likeCount++;
+                            likeCountEl.textContent = `${likeCount} likes`;
+                            
+                            M.toast({html: 'Failed to unlike post', classes: 'red'});
+                        });
+                    } else {
+                        // Like
+                        this.textContent = 'favorite';
+                        this.classList.add('active');
+                        likeCount++;
+                        
+                        fetch(`/api/posts/${postId}/like`, { 
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' }
+                        })
+                        .catch(error => {
+                            console.error('Error liking post:', error);
+                            // Revert UI
+                            this.textContent = 'favorite_border';
+                            this.classList.remove('active');
+                            likeCount--;
+                            likeCountEl.textContent = `${likeCount} likes`;
+                            
+                            M.toast({html: 'Failed to like post', classes: 'red'});
+                        });
+                    }
+                    
+                    likeCountEl.textContent = `${likeCount} likes`;
+                });
+            }
+            
+            // Handle bookmark action
+            const bookmarkAction = document.querySelector('.bookmark-action');
+            if (bookmarkAction) {
+                bookmarkAction.addEventListener('click', function() {
+                    const isBookmarked = this.textContent.trim() === 'bookmark';
+                    
+                    if (isBookmarked) {
+                        this.textContent = 'bookmark_border';
+                        M.toast({html: 'Removed from saved', classes: 'grey'});
+                    } else {
+                        this.textContent = 'bookmark';
+                        M.toast({html: 'Saved to collection', classes: 'green'});
+                    }
+                });
+            }
+            
+            // Handle share action
+            const shareAction = document.querySelector('.share-action');
+            if (shareAction) {
+                shareAction.addEventListener('click', function() {
+                    // Create a temporary input to copy the URL
+                    const input = document.createElement('input');
+                    input.value = window.location.href;
+                    document.body.appendChild(input);
+                    input.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(input);
+                    
+                    M.toast({html: 'Link copied to clipboard', classes: 'green'});
+                });
+            }
+            
+            // Handle comment form
+            const commentForm = document.getElementById('comment-form');
+            const commentInput = document.getElementById('comment-input');
+            const commentSubmit = document.getElementById('comment-submit');
+            
+            if (commentInput) {
+                commentInput.addEventListener('input', function() {
+                    commentSubmit.disabled = !this.value.trim();
+                });
+            }
+            
+            if (commentForm) {
+                commentForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const commentText = commentInput.value.trim();
+                    const postId = '{{ post.Id }}';
+                    
+                    if (!commentText) return;
+                    
+                    // Disable form
+                    commentInput.disabled = true;
+                    commentSubmit.disabled = true;
+                    
+                    // Submit comment
+                    fetch(`/posts/${postId}/comments`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            text: commentText
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        const success = data.status === true || data.success === true;
+                        
+                        if (!success) {
+                            throw new Error(data.message || 'Failed to add comment');
+                        }
+                        
+                        // Clear input
+                        commentInput.value = '';
+                        
+                        // Add comment to list
+                        const commentsSection = document.querySelector('.comments-section');
+                        const noComments = commentsSection.querySelector('.no-comments');
+                        
+                        if (noComments) {
+                            commentsSection.innerHTML = '';
+                        }
+                        
+                        // Create comment element
+                        const commentElement = document.createElement('div');
+                        commentElement.className = 'comment-item';
+                        
+                        commentElement.innerHTML = `
+                            <div class="comment-content">
+                                <p class="comment-text">
+                                    <a href="/profile/${data.comment.username}" class="comment-username">${data.comment.username}</a>
+                                    ${data.comment.text}
+                                </p>
+                                <div class="comment-timestamp" data-timestamp="${data.comment.timestamp || new Date().toISOString()}">
+                                    just now
+                                </div>
+                            </div>
+                        `;
+                        
+                        // Add to comments section
+                        commentsSection.prepend(commentElement);
+                        
+                        // Scroll to new comment
+                        commentsSection.scrollTop = 0;
+                        
+                        // Update comment count in likes section (if applicable)
+                        const commentCount = commentsSection.querySelectorAll('.comment-item').length;
+                        
+                        // Success message
+                        M.toast({html: 'Comment added', classes: 'green'});
+                    })
+                    .catch(error => {
+                        console.error('Error adding comment:', error);
+                        M.toast({html: error.message, classes: 'red'});
+                    })
+                    .finally(() => {
+                        // Re-enable form
+                        commentInput.disabled = false;
+                        commentSubmit.disabled = !commentInput.value.trim();
+                        commentInput.focus();
+                    });
+                });
+            }
+            
+            // Format timestamps function
+            function formatTimestamps() {
+                document.querySelectorAll('.post-time, .comment-timestamp').forEach(element => {
+                    const timestamp = element.getAttribute('data-timestamp');
+                    if (!timestamp) return;
+                    
+                    const date = new Date(timestamp);
+                    const now = new Date();
+                    const diffSeconds = Math.floor((now - date) / 1000);
+                    
+                    let formattedTime;
+                    
+                    if (diffSeconds < 60) {
+                        formattedTime = 'just now';
+                    } else if (diffSeconds < 3600) {
+                        const minutes = Math.floor(diffSeconds / 60);
+                        formattedTime = `${minutes}m ago`;
+                    } else if (diffSeconds < 86400) {
+                        const hours = Math.floor(diffSeconds / 3600);
+                        formattedTime = `${hours}h ago`;
+                    } else if (diffSeconds < 604800) {
+                        const days = Math.floor(diffSeconds / 86400);
+                        formattedTime = `${days}d ago`;
+                    } else {
+                        const options = { month: 'short', day: 'numeric' };
+                        if (date.getFullYear() !== now.getFullYear()) {
+                            options.year = 'numeric';
+                        }
+                        formattedTime = date.toLocaleDateString('en-US', options);
+                    }
+                    
+                    element.textContent = formattedTime;
+                });
+            }
+        });
+    </script>
+</body>
+</html>

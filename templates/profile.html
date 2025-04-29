@@ -283,6 +283,54 @@
                 margin-bottom: 15px;
             }
         }
+
+
+
+
+.navbar-fixed {
+    height: 64px;
+    z-index: 997;
+}
+
+nav {
+    background-color: var(--theme-card);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    color: var(--theme-primary);
+    display: block !important;
+}
+
+nav .brand-logo {
+    color: var(--theme-primary);
+    font-weight: 700;
+    padding-left: 15px;
+}
+
+/* Navigation links */
+nav ul a {
+    color: var(--theme-text-dark);
+    transition: color 0.3s ease;
+}
+
+nav ul a:hover {
+    background-color: rgba(94, 53, 177, 0.1);
+    color: var(--theme-primary);
+}
+
+nav ul a.active {
+    color: var(--theme-primary);
+    font-weight: 500;
+    background-color: rgba(94, 53, 177, 0.05);
+}
+
+
+
+/* Improve visibility on mobile */
+@media only screen and (max-width: 992px) {
+    nav .brand-logo {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+}
     </style>
 </head>
 
@@ -300,10 +348,10 @@
                 <a href="#" data-target="mobile-nav" class="sidenav-trigger"><i class="material-icons">menu</i></a>
                 <ul class="right hide-on-med-and-down">
                     <li><a href="/"><i class="material-icons">home</i></a></li>
-                    <li><a href="/explore"><i class="material-icons">explore</i></a></li>
-                    <li><a href="/create"><i class="material-icons">add_box</i></a></li>
-                    <li><a href="/profile" class="active"><i class="material-icons">person</i></a></li>
-                    <li><a href="#" id="desktop-logout" class="hidden"><i class="material-icons">exit_to_app</i></a></li>
+                    <li><a href="/search"><i class="material-icons">explore</i></a></li>
+                    <li><a href="/post/create"><i class="material-icons">add_box</i></a></li>
+                    
+
                 </ul>
             </div>
         </nav>

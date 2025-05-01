@@ -4,11 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PixelShare - Post</title>
-    <!-- Materialize CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-    <!-- Material Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <!-- Custom Styles -->
     <style>
         :root {
             --theme-primary: #5e35b1;
@@ -45,7 +42,6 @@
             display: flex;
         }
         
-        /* Post Detail Styles */
         .post-detail-card {
             display: flex;
             flex-direction: column;
@@ -240,7 +236,6 @@
             cursor: default;
         }
         
-        /* Related Posts Styles */
         .related-posts-card {
             padding: 16px;
             border-radius: 12px;
@@ -299,7 +294,6 @@
             text-overflow: ellipsis;
         }
         
-        /* Sidenav styles */
         .sidenav {
             width: 250px;
         }
@@ -315,7 +309,6 @@
             margin-right: 16px;
         }
         
-        /* Auth and loader styles */
         .auth-pending {
             visibility: hidden;
         }
@@ -335,7 +328,6 @@
             background-color: var(--theme-primary);
         }
         
-        /* Responsive Styles */
         @media (max-width: 992px) {
             .post-detail-container {
                 max-width: 100%;
@@ -362,12 +354,10 @@
 </head>
 
 <body>
-    <!-- Preloader -->
     <div class="progress" id="page-loader">
         <div class="indeterminate"></div>
     </div>
     
-    <!-- Navigation -->
     <div class="navbar-fixed">
         <nav>
             <div class="nav-wrapper container">
@@ -384,7 +374,6 @@
         </nav>
     </div>
     
-    <!-- Mobile Navigation -->
     <ul class="sidenav" id="mobile-nav">
         <li>
             <div class="user-view">
@@ -402,7 +391,6 @@
         <li><a href="#" id="mobile-logout" class="hidden"><i class="material-icons">exit_to_app</i>Sign Out</a></li>
     </ul>
     
-    <!-- Authentication Modal -->
     <div id="auth-modal" class="modal auth-pending">
         <div class="modal-content">
             <h4>Sign In</h4>
@@ -430,19 +418,15 @@
         </div>
     </div>
 
-    <!-- Main Content -->
     <div class="container main-container">
         <div class="row" id="content">
-            <!-- Post Detail Column -->
             <div class="col s12 l8 post-detail-container">
                 <div class="post-detail-card">
-                    <!-- Image Section -->
                     <div class="image-container">
                         <img src="/images/file_name={{ post.Image_ref | urlencode }}" class="post-image" alt="Post image">
                     </div>
                     
                     <div class="post-details-container">
-                        <!-- Post Header -->
                         <div class="post-header">
                             <a href="/profile/{{ post.Username }}">
                                 <img src="/images/file_name={{ post.User_Pic | urlencode }}" alt="{{ post.Username }}" class="user-avatar">
@@ -453,7 +437,6 @@
                             </div>
                         </div>
                         
-                        <!-- Post Actions -->
                         <div class="post-actions">
                             <i class="material-icons post-action like-action {% if post.user_has_liked %}active{% endif %}">
                                 {% if post.user_has_liked %}favorite{% else %}favorite_border{% endif %}
@@ -463,12 +446,10 @@
                             <i class="material-icons post-action bookmark-action right">bookmark_border</i>
                         </div>
                         
-                        <!-- Post Likes -->
                         <div class="post-likes">
                             {{ post.Likes if post.Likes else 0 }} likes
                         </div>
                         
-                        <!-- Post Caption -->
                         <div class="post-caption">
                             <span class="post-caption-username">{{ post.Username }}</span>
                             <span>{{ post.Caption }}</span>
@@ -481,7 +462,6 @@
                             {% endif %}
                         </div>
                         
-                        <!-- Comments Section -->
                         <div class="comments-section">
                             {% if post.Comments %}
                             {% set sorted_comments = post.Comments|sort(attribute='Date', reverse=True) %}
@@ -506,7 +486,6 @@
                             {% endif %}
                         </div>
                         
-                        <!-- Comment Form -->
                         <form class="comment-form" id="comment-form">
                             <input type="text" class="comment-input" id="comment-input" placeholder="Add a comment..." maxlength="200">
                             <button type="submit" class="comment-submit" id="comment-submit" disabled>Post</button>
@@ -515,7 +494,6 @@
                 </div>
             </div>
             
-            <!-- Related Posts Column -->
             <div class="col l4 related-posts-container">
                 <div class="related-posts-card">
                     <h5 class="related-posts-title">More from {{ post.Username }}</h5>
@@ -564,7 +542,6 @@
         </div>
     </div>
 
-    <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/3.0.1/js.cookie.min.js"></script>
@@ -572,14 +549,11 @@
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize Materialize components
             M.AutoInit();
             
-            // Format timestamps
             formatTimestamps();
             setInterval(formatTimestamps, 60000); // Update every minute
             
-            // Handle like action
             const likeAction = document.querySelector('.like-action');
             if (likeAction) {
                 likeAction.addEventListener('click', function() {
@@ -589,7 +563,6 @@
                     let likeCount = parseInt(likeCountEl.textContent);
                     
                     if (isLiked) {
-                        // Unlike
                         this.textContent = 'favorite_border';
                         this.classList.remove('active');
                         likeCount--;
@@ -600,7 +573,6 @@
                         })
                         .catch(error => {
                             console.error('Error unliking post:', error);
-                            // Revert UI
                             this.textContent = 'favorite';
                             this.classList.add('active');
                             likeCount++;
@@ -609,7 +581,6 @@
                             M.toast({html: 'Failed to unlike post', classes: 'red'});
                         });
                     } else {
-                        // Like
                         this.textContent = 'favorite';
                         this.classList.add('active');
                         likeCount++;
@@ -620,7 +591,6 @@
                         })
                         .catch(error => {
                             console.error('Error liking post:', error);
-                            // Revert UI
                             this.textContent = 'favorite_border';
                             this.classList.remove('active');
                             likeCount--;
@@ -634,7 +604,6 @@
                 });
             }
             
-            // Handle bookmark action
             const bookmarkAction = document.querySelector('.bookmark-action');
             if (bookmarkAction) {
                 bookmarkAction.addEventListener('click', function() {
@@ -650,11 +619,9 @@
                 });
             }
             
-            // Handle share action
             const shareAction = document.querySelector('.share-action');
             if (shareAction) {
                 shareAction.addEventListener('click', function() {
-                    // Create a temporary input to copy the URL
                     const input = document.createElement('input');
                     input.value = window.location.href;
                     document.body.appendChild(input);
@@ -666,7 +633,6 @@
                 });
             }
             
-            // Handle comment form
             const commentForm = document.getElementById('comment-form');
             const commentInput = document.getElementById('comment-input');
             const commentSubmit = document.getElementById('comment-submit');
@@ -686,11 +652,9 @@
                     
                     if (!commentText) return;
                     
-                    // Disable form
                     commentInput.disabled = true;
                     commentSubmit.disabled = true;
                     
-                    // Submit comment
                     fetch(`/posts/${postId}/comments`, {
                         method: 'POST',
                         headers: {
@@ -708,10 +672,8 @@
                             throw new Error(data.message || 'Failed to add comment');
                         }
                         
-                        // Clear input
                         commentInput.value = '';
                         
-                        // Add comment to list
                         const commentsSection = document.querySelector('.comments-section');
                         const noComments = commentsSection.querySelector('.no-comments');
                         
@@ -719,7 +681,6 @@
                             commentsSection.innerHTML = '';
                         }
                         
-                        // Create comment element
                         const commentElement = document.createElement('div');
                         commentElement.className = 'comment-item';
                         
@@ -735,16 +696,12 @@
                             </div>
                         `;
                         
-                        // Add to comments section
                         commentsSection.prepend(commentElement);
                         
-                        // Scroll to new comment
                         commentsSection.scrollTop = 0;
                         
-                        // Update comment count in likes section (if applicable)
                         const commentCount = commentsSection.querySelectorAll('.comment-item').length;
                         
-                        // Success message
                         M.toast({html: 'Comment added', classes: 'green'});
                     })
                     .catch(error => {
@@ -752,7 +709,6 @@
                         M.toast({html: error.message, classes: 'red'});
                     })
                     .finally(() => {
-                        // Re-enable form
                         commentInput.disabled = false;
                         commentSubmit.disabled = !commentInput.value.trim();
                         commentInput.focus();
@@ -760,7 +716,6 @@
                 });
             }
             
-            // Format timestamps function
             function formatTimestamps() {
                 document.querySelectorAll('.post-time, .comment-timestamp').forEach(element => {
                     const timestamp = element.getAttribute('data-timestamp');

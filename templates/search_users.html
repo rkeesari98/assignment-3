@@ -4,11 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PixelShare - Discover People</title>
-    <!-- Materialize CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-    <!-- Material Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <!-- Custom Styles -->
     <style>
         :root {
             --theme-primary: #5e35b1;
@@ -43,7 +40,6 @@
             padding-bottom: 40px;
         }
         
-        /* User Cards */
         .user-card {
             padding: 15px;
             display: flex;
@@ -132,7 +128,6 @@
             background-color: var(--theme-primary);
         }
         
-        /* Search Styles */
         .search-box {
             position: relative;
             margin-bottom: 16px;
@@ -161,7 +156,6 @@
             color: var(--theme-text-light);
         }
         
-        /* Empty State */
         .empty-state {
             text-align: center;
             padding: 60px 20px;
@@ -175,7 +169,6 @@
             margin-bottom: 20px;
         }
         
-        /* Loader */
         .loader-container {
             display: flex;
             justify-content: center;
@@ -183,7 +176,6 @@
             padding: 40px 0;
         }
         
-        /* Skeleton loader */
         .skeleton {
             background-color: #f0f0f0;
             border-radius: 4px;
@@ -246,12 +238,10 @@
             border-radius: 18px;
         }
         
-        /* Hidden class */
         .hidden {
             display: none;
         }
         
-        /* Mobile responsive adjustments */
         @media only screen and (max-width: 600px) {
             .follow-btn {
                 min-width: 70px;
@@ -270,9 +260,8 @@
 
 
 
-        /* Add these styles to your CSS to fix the navigation bar appearance */
 
-/* Navigation bar structure */
+
 .navbar-fixed {
     height: 64px;
     z-index: 997;
@@ -337,7 +326,6 @@ nav ul a.active {
 </head>
 
 <body>
-    <!-- Navigation -->
     <div class="navbar-fixed">
         <nav>
             <div class="nav-wrapper container">
@@ -354,7 +342,6 @@ nav ul a.active {
         </nav>
     </div>
     
-    <!-- Mobile Navigation -->
     <ul class="sidenav" id="mobile-nav">
         <li><a href="/"><i class="material-icons">home</i>Home</a></li>
         <li><a href="/explore"><i class="material-icons">explore</i>Explore</a></li>
@@ -364,11 +351,9 @@ nav ul a.active {
         <li><a href="#" id="mobile-logout" class="hidden"><i class="material-icons">exit_to_app</i>Sign Out</a></li>
     </ul>
 
-    <!-- Main Content -->
     <div class="container main-container">
         <div class="row">
             <div class="col s12">
-                <!-- Header -->
                 <div class="section">
                     <h4 class="header">
                         {% if mode == 'search' %}
@@ -391,7 +376,6 @@ nav ul a.active {
                     </h4>
                 </div>
                 
-                <!-- Tabs for Followers/Following Mode -->
                 {% if mode == 'followers' or mode == 'following' %}
                 <div class="row">
                     <div class="col s12">
@@ -411,16 +395,13 @@ nav ul a.active {
                 </div>
                 {% endif %}
                 
-                <!-- Search/Filter Section -->
                 <div class="filter-tabs section">
-                    <!-- Search Box -->
                     <div class="search-box">
                         <i class="material-icons search-icon">search</i>
                         <input type="text" id="search-input" class="search-input" placeholder="{{ search_placeholder|default('Search users...') }}">
                     </div>
                 </div>
                 
-                <!-- User List -->
                 <div class="section" id="user-list-container">
                     <div id="loading-indicator" class="loader-container hidden">
                         <div class="preloader-wrapper small active">
@@ -501,7 +482,6 @@ nav ul a.active {
                         <p class="grey-text">We couldn't find any users matching your search.</p>
                     </div>
                     
-                    <!-- Load More Button -->
                     {% if users and has_more %}
                     <div class="center-align" style="margin-top: 20px;" id="load-more-container">
                         <button class="btn waves-effect waves-light" id="load-more-btn" style="background-color: var(--theme-primary);" data-page="2">
@@ -514,17 +494,14 @@ nav ul a.active {
         </div>
     </div>
 
-    <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/3.0.1/js.cookie.min.js"></script>
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize Materialize components
             M.AutoInit();
             
-            // Constants
             const mode = '{{ mode }}';
             const searchInput = document.getElementById('search-input');
             const userList = document.getElementById('user-list');
@@ -536,20 +513,16 @@ nav ul a.active {
             let isSearching = false;
             let currentPage = 1;
             
-            // Handle search input
             if (searchInput) {
                 if (mode === 'followers' || mode === 'following') {
-                    // For followers or following mode, filter the existing list
                     searchInput.addEventListener('input', filterUsers);
                 } else if (mode === 'search') {
-                    // For search mode, debounce and search with API
                     let searchTimeout;
                     searchInput.addEventListener('input', function() {
                         clearTimeout(searchTimeout);
                         searchTimeout = setTimeout(performSearch, 500);
                     });
                     
-                    // Also search on Enter key
                     searchInput.addEventListener('keypress', function(e) {
                         if (e.key === 'Enter') {
                             clearTimeout(searchTimeout);
@@ -559,7 +532,6 @@ nav ul a.active {
                 }
             }
             
-            // Load more button
             if (loadMoreBtn) {
                 loadMoreBtn.addEventListener('click', function() {
                     if (isSearching) return;
@@ -569,10 +541,8 @@ nav ul a.active {
                 });
             }
             
-            // Follow/unfollow buttons
             setupFollowButtons();
             
-            // Function to filter users in the current list (for followers/following mode)
             function filterUsers() {
                 const searchValue = searchInput.value.toLowerCase();
                 const userCards = userList.querySelectorAll('.user-card');
@@ -592,23 +562,18 @@ nav ul a.active {
                     }
                 });
                 
-                // Show/hide empty state
                 if (visibleCount === 0 && searchValue) {
-                    // No results for search
                     if (emptyState) emptyState.style.display = 'none';
                     if (noResults) noResults.style.display = 'block';
                 } else if (visibleCount === 0) {
-                    // No users at all
                     if (emptyState) emptyState.style.display = 'block';
                     if (noResults) noResults.style.display = 'none';
                 } else {
-                    // Has results
                     if (emptyState) emptyState.style.display = 'none';
                     if (noResults) noResults.style.display = 'none';
                 }
             }
             
-            // Function to perform search with API (for search mode)
             function performSearch() {
                 if (isSearching || mode !== 'search') return;
                 
@@ -616,19 +581,16 @@ nav ul a.active {
                 currentPage = 1;
                 isSearching = true;
                 
-                // Show loading, hide other states
                 if (loadingIndicator) loadingIndicator.classList.remove('hidden');
                 if (emptyState) emptyState.style.display = 'none';
                 if (noResults) noResults.classList.add('hidden');
                 if (userList) userList.innerHTML = createSkeletonLoaders(5);
                 if (loadMoreBtn) loadMoreBtn.parentElement.style.display = 'none';
                 
-                // Build search parameters
                 const params = new URLSearchParams();
                 if (query) params.append('query', query);
                 params.append('page', currentPage);
                 
-                // Perform search
                 fetch(`/api/search?${params.toString()}`)
                     .then(response => response.json())
                     .then(data => {
@@ -654,7 +616,6 @@ nav ul a.active {
                         if (loadingIndicator) loadingIndicator.classList.add('hidden');
                         userList.innerHTML = '';
                         
-                        // Show error state
                         const errorState = document.createElement('div');
                         errorState.className = 'empty-state';
                         errorState.innerHTML = `
@@ -671,7 +632,6 @@ nav ul a.active {
                     });
             }
             
-            // Function to load more users
             function loadMoreUsers() {
                 if (isSearching) return;
                 isSearching = true;
@@ -681,7 +641,6 @@ nav ul a.active {
                     loadMoreBtn.innerHTML = '<i class="material-icons left">hourglass_empty</i>Loading...';
                 }
                 
-                // Build search parameters
                 const params = new URLSearchParams();
                 const query = searchInput.value.trim();
                 if (query) params.append('query', query);
@@ -719,7 +678,6 @@ nav ul a.active {
                     });
             }
             
-            // Function to render users list
             function renderUsers(users, hasMore) {
                 userList.innerHTML = '';
                 
@@ -728,7 +686,6 @@ nav ul a.active {
                     userList.appendChild(userCard);
                 });
                 
-                // Show/hide load more button
                 if (loadMoreBtn) {
                     if (hasMore) {
                         loadMoreBtn.parentElement.style.display = 'block';
@@ -741,7 +698,6 @@ nav ul a.active {
                 setupFollowButtons();
             }
             
-            // Function to append users to existing list
             function appendUsers(users, hasMore) {
                 users.forEach(user => {
                     const userCard = createUserCard(user);
@@ -751,7 +707,6 @@ nav ul a.active {
                 setupFollowButtons();
             }
             
-            // Function to create a user card element
             function createUserCard(user) {
                 const isCurrentUser = user.Username === '{{ current_username }}';
                 
@@ -782,7 +737,6 @@ nav ul a.active {
                 return userCard;
             }
             
-            // Function to create skeleton loaders
             function createSkeletonLoaders(count) {
                 let html = '';
                 
@@ -802,7 +756,6 @@ nav ul a.active {
                 return html;
             }
             
-            // Function to setup follow buttons
             function setupFollowButtons() {
                 document.querySelectorAll('.follow-btn:not([data-initialized])').forEach(button => {
                     button.setAttribute('data-initialized', 'true');
@@ -813,10 +766,8 @@ nav ul a.active {
                         const username = this.dataset.username;
                         const isFollowing = this.classList.contains('following');
                         
-                        // Disable to prevent multiple clicks
                         this.disabled = true;
                         
-                        // Optimistic UI update
                         if (isFollowing) {
                             this.textContent = 'Follow';
                             this.classList.remove('following');
@@ -827,7 +778,6 @@ nav ul a.active {
                             this.classList.add('following');
                         }
                         
-                        // API call
                         fetch(`/follow/${username}`, {
                             method: isFollowing ? 'DELETE' : 'POST',
                             headers: { 'Content-Type': 'application/json' }
@@ -838,7 +788,6 @@ nav ul a.active {
                                 throw new Error(data.message || 'Failed to update follow status');
                             }
                             
-                            // Show success toast
                             M.toast({
                                 html: isFollowing ? `Unfollowed @${username}` : `Following @${username}`,
                                 classes: 'green'
@@ -847,7 +796,6 @@ nav ul a.active {
                         .catch(error => {
                             console.error('Follow/unfollow error:', error);
                             
-                            // Revert UI
                             if (isFollowing) {
                                 this.textContent = 'Following';
                                 this.classList.remove('follow');
@@ -866,10 +814,8 @@ nav ul a.active {
                     });
                 });
                 
-                // Make whole card clickable to go to profile
                 document.querySelectorAll('.user-card').forEach(card => {
                     card.addEventListener('click', function(e) {
-                        // Don't trigger if clicking on follow button or link
                         if (e.target.closest('.follow-btn') || e.target.closest('a')) {
                             return;
                         }

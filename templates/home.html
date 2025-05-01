@@ -43,7 +43,6 @@
             padding-bottom: 40px;
         }
         
-        /* Post Card Styles */
         .post-card {
             margin-bottom: 20px;
             border-radius: 12px;
@@ -177,17 +176,16 @@
             cursor: default;
         }
 
-        /* Story Circle Styles */
         .story-container {
             display: flex;
             overflow-x: auto;
             padding: 12px 0;
             margin-bottom: 20px;
-            scrollbar-width: none; /* Firefox */
+            scrollbar-width: none; /
         }
         
         .story-container::-webkit-scrollbar {
-            display: none; /* Chrome, Safari, Opera */
+            display: none; 
         }
         
         .story-item {
@@ -233,7 +231,7 @@
             white-space: nowrap;
         }
 
-        /* User Card Styles */
+ 
         .user-card {
             border-radius: 12px;
             overflow: hidden;
@@ -256,6 +254,62 @@
         .user-card-info {
             flex-grow: 1;
         }
+
+
+
+
+        .navbar-fixed {
+    height: 64px;
+    z-index: 997;
+}
+
+nav {
+    background-color: var(--theme-card);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    color: var(--theme-primary);
+    display: block !important;
+}
+
+nav .brand-logo {
+    color: var(--theme-primary);
+    font-weight: 700;
+    padding-left: 15px;
+}
+
+nav ul a {
+    color: var(--theme-text-dark);
+}
+
+
+#sign-out {
+    margin-right: 10px;
+    margin-left: 10px;
+    color: white;
+    height: 36px;
+    line-height: 36px;
+    padding: 0 16px;
+    text-transform: uppercase;
+    border-radius: 4px;
+}
+
+#mobile-sign-out {
+    color: var(--theme-primary);
+    font-weight: 500;
+}
+
+@media only screen and (max-width: 992px) {
+    nav .brand-logo {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+}
+
+
+
+
+
+
+
         
         .user-card-username {
             margin: 0;
@@ -353,7 +407,6 @@
             cursor: pointer;
         }
         
-        /* No Posts State */
         .no-posts {
             text-align: center;
             padding: 60px 20px;
@@ -365,7 +418,6 @@
             margin-bottom: 20px;
         }
         
-        /* Sidenav styles */
         .sidenav {
             width: 250px;
         }
@@ -381,7 +433,6 @@
             margin-right: 16px;
         }
         
-        /* Auth and loader styles */
         .auth-pending {
             visibility: hidden;
         }
@@ -401,7 +452,6 @@
             background-color: var(--theme-primary);
         }
         
-        /* Comments modal */
         .comments-header {
             font-weight: 600;
             padding-bottom: 16px;
@@ -447,7 +497,6 @@
             margin-top: 4px;
         }
         
-        /* Make things more responsive */
         @media only screen and (max-width: 992px) {
             .side-content {
                 display: none;
@@ -469,7 +518,6 @@
 
 
 
-        /* Styles for profile setup */
 .hidden {
     display: none !important;
 }
@@ -484,14 +532,12 @@
     padding-bottom: 0;
 }
 
-/* Character counter for bio */
 .character-counter {
     float: right;
     font-size: 12px;
     color: var(--theme-text-light);
 }
 
-/* Error message styling */
 #profile-setup-error {
     padding: 10px;
     margin-top: 10px;
@@ -585,16 +631,15 @@
                 <a href="#" data-target="mobile-nav" class="sidenav-trigger"><i class="material-icons">menu</i></a>
                 <ul class="right hide-on-med-and-down">
                     <li><a href="/" class="active"><i class="material-icons">home</i></a></li>
-                    <li><a href="/explore"><i class="material-icons">explore</i></a></li>
-                    <li><a href="/create"><i class="material-icons">add_box</i></a></li>
-                    <li><a href="/profile"><i class="material-icons">person</i></a></li>
-                    <li><a href="#" id="desktop-logout" class="hidden"><i class="material-icons">exit_to_app</i></a></li>
+                    <li><a href="/search"><i class="material-icons">explore</i></a></li>
+                    <li><a href="/post/create"><i class="material-icons">add_box</i></a></li>
+                    <li><a href="/profile/self"><i class="material-icons">person</i></a></li>
+                    <li><a href="#" id="sign-out" class="btn waves-effect waves-light" style="background-color: var(--theme-primary);">Sign Out</a></li>
                 </ul>
             </div>
         </nav>
     </div>
     
-
     <ul class="sidenav" id="mobile-nav">
         <li>
             <div class="user-view">
@@ -606,12 +651,11 @@
         </li>
         <li><a href="/"><i class="material-icons">home</i>Home</a></li>
         <li><a href="/explore"><i class="material-icons">explore</i>Explore</a></li>
-        <li><a href="/create"><i class="material-icons">add_box</i>Create Post</a></li>
+        <li><a href="/post/create"><i class="material-icons">add_box</i>Create Post</a></li>
         <li><a href="/profile"><i class="material-icons">person</i>Profile</a></li>
         <li><div class="divider"></div></li>
-        <li><a href="#" id="mobile-logout" class="hidden"><i class="material-icons">exit_to_app</i>Sign Out</a></li>
+        <li><a href="#" id="mobile-sign-out"><i class="material-icons">exit_to_app</i>Sign Out</a></li>
     </ul>
-    
 
     <div id="auth-modal" class="modal auth-pending">
         <div class="modal-content">
@@ -677,7 +721,7 @@
                         <div class="story-item">
                             <div class="story-circle">
                                 <div class="story-circle-inner">
-                                    <img class="story-avatar" src="/images/file_name={{ story.profile_pic_url | urlencode }}" alt="{{ story.username }}">
+                                    <img class="story-avatar" src="/images/file_name={{ story.Profile_Pic_Url | urlencode }}" alt="{{ story.username }}">
                                 </div>
                             </div>
                             <p class="story-username">{{ story.username }}</p>
@@ -702,7 +746,7 @@
                             </div>
                             
                             <div class="post-image-container">
-                                <img src="/images/file_name={{ post.Image_ref | urlencode }}" alt="Post image" class="post-image">
+                                <img src="/images/file_name={{ post.Image | urlencode }}" alt="Post image" class="post-image">
                             </div>
                             
                             <div class="post-actions">
@@ -712,18 +756,15 @@
                                 <i class="material-icons post-action bookmark-action right">bookmark_border</i>
                             </div>
                             
-                            <div class="post-likes">
-                                {{ post.Likes if post.Likes else 0 }} likes
-                            </div>
                             
                             <div class="post-caption">
                                 <span class="post-caption-username">{{ post.Username }}</span>
-                                <span>{{ post.Caption }}</span>
+                                <span>{{ post.Quote }}</span>
                             </div>
                             
                             {% if post.Comments %}
                             <div class="post-comments-preview">
-                                {% for comment in post.Comments[:2] %}
+                                {% for comment in post.Comments[:5] %}
                                 <div class="post-comment">
                                     <span class="post-comment-username">{{ comment.Username }}</span>
                                     <span>{{ comment.Text }}</span>
@@ -731,7 +772,7 @@
                                 {% endfor %}
                             </div>
                             
-                            {% if post.Comments|length > 2 %}
+                            {% if post.Comments|length > 5 %}
                             <div class="view-comments" data-post-id="{{ post.Id }}">
                                 View all {{ post.Comments|length }} comments
                             </div>
@@ -764,8 +805,10 @@
                     <div class="user-card-header">
                         <img src="/images/file_name={{ user.Profile_Pic_Url | urlencode }}" class="user-card-avatar" alt="Your profile picture">
                         <div class="user-card-info">
-                            <h5 class="user-card-username">{{ user.Username }}</h5>
-                            <p class="user-card-bio">{{ bio|truncate(50) if bio else 'No bio yet' }}</p>
+                            <h5 class="user-card-username">
+                                <a href="/profile/self">{{ user.Username }}</a>
+                              </h5>
+                            <p class="user-card-bio">{{ user.Bio|truncate(50) if user.Bio else 'No bio yet' }}</p>
                         </div>
                     </div>
                     
@@ -790,29 +833,6 @@
                 </div>
                 
 
-                <div class="card suggestion-card">
-                    <div class="suggestion-header">
-                        <h6 class="suggestion-title">Suggestions For You</h6>
-                        <a href="/explore" class="suggestion-see-all">See All</a>
-                    </div>
-                    
-                    {% if suggested_users %}
-                        {% for user in suggested_users[:5] %}
-                        <div class="suggestion-user">
-                            <img src="/images/file_name={{ user.Profile_Pic_Url | urlencode }}" class="suggestion-avatar" alt="{{ user.Username }}">
-                            <div class="suggestion-info">
-                                <h6 class="suggestion-username">{{ user.Username }}</h6>
-                                <p class="suggestion-meta">{{ 'Popular' if loop.index == 1 else 'Suggested for you' }}</p>
-                            </div>
-                            <button class="follow-btn" data-username="{{ user.Username }}">Follow</button>
-                        </div>
-                        {% endfor %}
-                    {% else %}
-                        <div class="center-align" style="padding: 20px;">
-                            <p class="grey-text">No suggestions available at the moment.</p>
-                        </div>
-                    {% endif %}
-                </div>
                 
 
                 <div style="padding: 20px 0;">
@@ -1006,7 +1026,7 @@
                                 const currentCount = parseInt(viewComments.textContent.match(/\d+/)[0]);
                                 viewComments.textContent = `View all ${currentCount + 1} comments`;
                             } 
-                            else if (existingComments.length >= 2) {
+                            else if (existingComments.length >= 5) {
                                 const viewCommentsEl = document.createElement('div');
                                 viewCommentsEl.className = 'view-comments';
                                 viewCommentsEl.dataset.postId = postId;
@@ -1208,7 +1228,7 @@
                             const commentEl = document.createElement('li');
                             commentEl.className = 'comment-item';
                             commentEl.innerHTML = `
-                                <img src="/images/file_name=${encodeURIComponent(comment.user_pic || '')}" class="comment-avatar" alt="${comment.username}">
+                                
                                 <div class="comment-content">
                                     <p class="comment-text"><span class="comment-username">${comment.username}</span> ${comment.text}</p>
                                     <div class="comment-time" data-timestamp="${comment.timestamp}">${comment.timestamp}</div>
@@ -1416,5 +1436,86 @@ function handleProfileSetup(e) {
 
 
     </script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize sidenav
+        var elems = document.querySelectorAll('.sidenav');
+        var instances = M.Sidenav.init(elems);
+        
+        // Initialize the desktop sign-out button
+        const signOutBtn = document.getElementById("sign-out");
+        if (signOutBtn) {
+            signOutBtn.addEventListener('click', handleSignOut);
+        }
+        
+        // Initialize the mobile sign-out button
+        const mobileSignOutBtn = document.getElementById("mobile-sign-out");
+        if (mobileSignOutBtn) {
+            mobileSignOutBtn.addEventListener('click', handleSignOut);
+        }
+        
+        function handleSignOut() {
+            // This function will be handled by the firebase-login.js
+            // which is already set up to handle sign-out
+            console.log("Sign out clicked");
+        }
+    });
+
+
+
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+    // Get the sign-out buttons
+    const signOutBtn = document.getElementById("sign-out");
+    const mobileSignOutBtn = document.getElementById("mobile-sign-out");
+    
+    function handleSignOut() {
+        console.log("Sign out initiated");
+        // Use the Firebase signOut function directly from the firebase-login.js module
+        
+        // Method 1: Try to access the Firebase Auth directly if available
+        if (typeof firebase !== 'undefined' && firebase.auth) {
+            console.log("Using Firebase Auth directly");
+            firebase.auth().signOut().then(() => {
+                document.cookie = "token=; path=/; SameSite=Strict; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+                console.log("User signed out successfully");
+                window.location.href = "/";
+            }).catch((error) => {
+                console.error("Error signing out:", error);
+                alert("Failed to sign out. Please try again.");
+            });
+        } 
+        // Method 2: If Firebase is not available in global scope, use a custom event
+        else {
+            console.log("Using custom event for sign out");
+            // Create and dispatch a custom event that can be caught by firebase-login.js
+            const signOutEvent = new CustomEvent('user-sign-out-requested');
+            document.dispatchEvent(signOutEvent);
+            
+            // Also try the direct cookie removal approach as a fallback
+            document.cookie = "token=; path=/; SameSite=Strict; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+            setTimeout(() => {
+                window.location.href = "/";
+            }, 500);
+        }
+    }
+    
+    // Add click event listeners to both sign-out buttons
+    if (signOutBtn) {
+        signOutBtn.addEventListener('click', handleSignOut);
+        console.log("Desktop sign-out button event listener added");
+    }
+    
+    if (mobileSignOutBtn) {
+        mobileSignOutBtn.addEventListener('click', handleSignOut);
+        console.log("Mobile sign-out button event listener added");
+    }
+});
+</script>
+
+
+
 </body>
 </html>

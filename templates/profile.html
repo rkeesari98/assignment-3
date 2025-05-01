@@ -4,11 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PixelShare - Profile</title>
-    <!-- Materialize CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-    <!-- Material Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <!-- Custom Styles -->
     <style>
         :root {
             --theme-primary: #5e35b1;
@@ -43,7 +40,6 @@
             padding-bottom: 40px;
         }
         
-        /* Profile Header Styles */
         .profile-header {
             padding: 30px;
             background-color: var(--theme-card);
@@ -123,7 +119,6 @@
             border: 1px solid var(--theme-border);
         }
         
-        /* Gallery Styles */
         .gallery-tabs {
             background-color: var(--theme-card);
             border-radius: 12px;
@@ -220,7 +215,6 @@
             display: none;
         }
         
-        /* Sidenav styles */
         .sidenav {
             width: 250px;
         }
@@ -236,7 +230,6 @@
             margin-right: 16px;
         }
         
-        /* Auth and loader styles */
         .auth-pending {
             visibility: hidden;
         }
@@ -256,7 +249,6 @@
             background-color: var(--theme-primary);
         }
         
-        /* Mobile responsive adjustments */
         @media only screen and (max-width: 992px) {
             .profile-header {
                 padding: 20px;
@@ -305,7 +297,6 @@ nav .brand-logo {
     padding-left: 15px;
 }
 
-/* Navigation links */
 nav ul a {
     color: var(--theme-text-dark);
     transition: color 0.3s ease;
@@ -324,7 +315,6 @@ nav ul a.active {
 
 
 
-/* Improve visibility on mobile */
 @media only screen and (max-width: 992px) {
     nav .brand-logo {
         left: 50%;
@@ -335,12 +325,10 @@ nav ul a.active {
 </head>
 
 <body>
-    <!-- Preloader -->
     <div class="progress" id="page-loader">
         <div class="indeterminate"></div>
     </div>
     
-    <!-- Navigation -->
     <div class="navbar-fixed">
         <nav>
             <div class="nav-wrapper container">
@@ -357,7 +345,6 @@ nav ul a.active {
         </nav>
     </div>
     
-    <!-- Mobile Navigation -->
     <ul class="sidenav" id="mobile-nav">
         <li>
             <div class="user-view">
@@ -375,7 +362,6 @@ nav ul a.active {
         <li><a href="#" id="mobile-logout" class="hidden"><i class="material-icons">exit_to_app</i>Sign Out</a></li>
     </ul>
     
-    <!-- Authentication Modal -->
     <div id="auth-modal" class="modal auth-pending">
         <div class="modal-content">
             <h4>Sign In</h4>
@@ -403,10 +389,8 @@ nav ul a.active {
         </div>
     </div>
 
-    <!-- Main Content -->
     <div class="container main-container">
         <div class="row" id="content">
-            <!-- Profile Header -->
             <div class="col s12">
                 <div class="profile-header">
                     <div class="row valign-wrapper">
@@ -439,10 +423,8 @@ nav ul a.active {
                                         
                                         <div class="profile-actions" style="margin-top: 0;">
                                             {% if is_own_profile %}
-                                            <a href="/edit_profile" class="btn waves-effect waves-light btn-edit-profile hide-on-small-only">
-                                                Edit Profile
-                                            </a>
-                                            <a href="/create" class="btn waves-effect waves-light" style="background-color: var(--theme-primary);">
+                                            
+                                            <a href="/post/create" class="btn waves-effect waves-light" style="background-color: var(--theme-primary);">
                                                 Create Post
                                             </a>
                                             {% else %}
@@ -487,7 +469,6 @@ nav ul a.active {
                 </div>
             </div>
             
-            <!-- Gallery Tabs -->
             <div class="col s12">
                 <div class="gallery-tabs">
                     <ul class="tabs">
@@ -504,7 +485,6 @@ nav ul a.active {
                 </div>
             </div>
             
-            <!-- Posts Gallery -->
             <div id="posts-gallery" class="col s12">
                 {% if posts %}
                 <div class="gallery-grid">
@@ -543,7 +523,6 @@ nav ul a.active {
                 {% endif %}
             </div>
             
-            <!-- Saved Gallery -->
             <div id="saved-gallery" class="col s12">
                 <div class="empty-gallery">
                     <i class="material-icons empty-gallery-icon">bookmark</i>
@@ -552,7 +531,6 @@ nav ul a.active {
                 </div>
             </div>
             
-            <!-- Tagged Gallery -->
             <div id="tagged-gallery" class="col s12">
                 <div class="empty-gallery">
                     <i class="material-icons empty-gallery-icon">person_pin</i>
@@ -563,7 +541,6 @@ nav ul a.active {
         </div>
     </div>
 
-    <!-- Followers Modal -->
     <div id="followers-modal" class="modal">
         <div class="modal-content">
             <h5>Followers</h5>
@@ -572,7 +549,6 @@ nav ul a.active {
                 <input type="text" id="followers-search" placeholder="Search followers">
             </div>
             <ul class="collection" id="followers-list">
-                <!-- Followers will be loaded here -->
             </ul>
         </div>
         <div class="modal-footer">
@@ -580,7 +556,6 @@ nav ul a.active {
         </div>
     </div>
     
-    <!-- Following Modal -->
     <div id="following-modal" class="modal">
         <div class="modal-content">
             <h5>Following</h5>
@@ -589,7 +564,6 @@ nav ul a.active {
                 <input type="text" id="following-search" placeholder="Search following">
             </div>
             <ul class="collection" id="following-list">
-                <!-- Following users will be loaded here -->
             </ul>
         </div>
         <div class="modal-footer">
@@ -597,27 +571,23 @@ nav ul a.active {
         </div>
     </div>
 
-    <!-- Scripts -->
-    <!-- Scripts - Correct Order -->
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/3.0.1/js.cookie.min.js"></script>
 <script type="module" src="/static/firebase-login.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize Materialize components
             var elems = document.querySelectorAll('.sidenav');
         var instances = M.Sidenav.init(elems);
             M.AutoInit();
             
-            // Follow/Unfollow functionality
             const followButton = document.getElementById('follow-button');
             if (followButton) {
                 followButton.addEventListener('click', function() {
                     const username = this.getAttribute('data-username');
                     const isFollowing = this.textContent.trim() === 'Following';
                     
-                    // Change button appearance
                     if (isFollowing) {
                         this.textContent = 'Follow';
                         this.classList.remove('btn-edit-profile');
@@ -628,7 +598,6 @@ nav ul a.active {
                         this.classList.add('btn-edit-profile');
                     }
                     
-                    // Send request to server
                     fetch(`/follow/${username}`, {
                         method: isFollowing ? 'DELETE' : 'POST',
                         headers: {
@@ -643,7 +612,6 @@ nav ul a.active {
                     })
                     .then(data => {
                         if (data.success) {
-                            // Update follower count
                             const followerCountEl = document.querySelector('#followers-stat .profile-stat-number');
                             if (followerCountEl) {
                                 let count = parseInt(followerCountEl.textContent);
@@ -658,7 +626,6 @@ nav ul a.active {
                     .catch(error => {
                         console.error('Follow/unfollow error:', error);
                         
-                        // Revert button state on error
                         if (isFollowing) {
                             this.textContent = 'Following';
                             this.classList.remove('btn-follow');
@@ -674,7 +641,6 @@ nav ul a.active {
                 });
             }
             
-            // Followers/Following modal handling
             const followersStatEl = document.getElementById('followers-stat');
             const followingStatEl = document.getElementById('following-stat');
             
@@ -690,7 +656,6 @@ nav ul a.active {
                 });
             }
             
-            // Search functionality for followers & following lists
             document.getElementById('followers-search').addEventListener('input', function() {
                 filterList('followers-list', this.value);
             });
@@ -699,7 +664,6 @@ nav ul a.active {
                 filterList('following-list', this.value);
             });
             
-            // Function to filter followers/following lists
             function filterList(listId, query) {
                 const list = document.getElementById(listId);
                 const items = list.querySelectorAll('li');
@@ -717,7 +681,6 @@ nav ul a.active {
                     }
                 });
                 
-                // Show "no results" message if all items are hidden
                 let noResultsMsg = list.querySelector('.no-results');
                 const hasVisibleItems = Array.from(items).some(item => item.style.display !== 'none');
                 
@@ -733,20 +696,17 @@ nav ul a.active {
                 }
             }
             
-            // Function to open followers modal and load data
             function openFollowersModal() {
                 const modal = document.getElementById('followers-modal');
                 const instance = M.Modal.getInstance(modal);
                 const followersList = document.getElementById('followers-list');
                 
-                // Clear previous list and search
                 followersList.innerHTML = '<div class="center-align" style="padding: 20px;"><div class="preloader-wrapper small active"><div class="spinner-layer spinner-blue-only"><div class="circle-clipper left"><div class="circle"></div></div><div class="gap-patch"><div class="circle"></div></div><div class="circle-clipper right"><div class="circle"></div></div></div></div></div>';
                 document.getElementById('followers-search').value = '';
                 
-                // Open modal
+
                 instance.open();
                 
-                // Fetch followers
                 fetch(`/profile/{{ profile_username }}/followers`)
                     .then(response => response.json())
                     .then(data => {
@@ -780,7 +740,6 @@ nav ul a.active {
                             followersList.appendChild(li);
                         });
                         
-                        // Add follow toggle functionality
                         document.querySelectorAll('#followers-list .follow-toggle').forEach(btn => {
                             btn.addEventListener('click', function(e) {
                                 e.preventDefault();
@@ -788,7 +747,6 @@ nav ul a.active {
                                 const username = this.closest('li').querySelector('.title a').textContent;
                                 const isFollowing = this.classList.contains('is-following');
                                 
-                                // Change button appearance
                                 if (isFollowing) {
                                     this.textContent = 'Follow';
                                     this.classList.remove('is-following');
@@ -797,7 +755,6 @@ nav ul a.active {
                                     this.classList.add('is-following');
                                 }
                                 
-                                // Send request to server
                                 fetch(`/follow/${username}`, {
                                     method: isFollowing ? 'DELETE' : 'POST',
                                     headers: {
@@ -813,7 +770,6 @@ nav ul a.active {
                                 .catch(error => {
                                     console.error('Follow/unfollow error:', error);
                                     
-                                    // Revert button state on error
                                     if (isFollowing) {
                                         this.textContent = 'Following';
                                         this.classList.add('is-following');
@@ -833,20 +789,16 @@ nav ul a.active {
                     });
             }
             
-            // Function to open following modal and load data
             function openFollowingModal() {
                 const modal = document.getElementById('following-modal');
                 const instance = M.Modal.getInstance(modal);
                 const followingList = document.getElementById('following-list');
                 
-                // Clear previous list and search
                 followingList.innerHTML = '<div class="center-align" style="padding: 20px;"><div class="preloader-wrapper small active"><div class="spinner-layer spinner-blue-only"><div class="circle-clipper left"><div class="circle"></div></div><div class="gap-patch"><div class="circle"></div></div><div class="circle-clipper right"><div class="circle"></div></div></div></div></div>';
                 document.getElementById('following-search').value = '';
                 
-                // Open modal
                 instance.open();
                 
-                // Fetch following
                 fetch(`/profile/{{ profile_username }}/following`)
                     .then(response => response.json())
                     .then(data => {
@@ -880,7 +832,6 @@ nav ul a.active {
                             followingList.appendChild(li);
                         });
                         
-                        // Add follow toggle functionality
                         document.querySelectorAll('#following-list .follow-toggle').forEach(btn => {
                             btn.addEventListener('click', function(e) {
                                 e.preventDefault();
@@ -888,7 +839,6 @@ nav ul a.active {
                                 const username = this.closest('li').querySelector('.title a').textContent;
                                 const isFollowing = this.classList.contains('is-following');
                                 
-                                // Change button appearance
                                 if (isFollowing) {
                                     this.textContent = 'Follow';
                                     this.classList.remove('is-following');
@@ -897,7 +847,7 @@ nav ul a.active {
                                     this.classList.add('is-following');
                                 }
                                 
-                                // Send request to server
+
                                 fetch(`/follow/${username}`, {
                                     method: isFollowing ? 'DELETE' : 'POST',
                                     headers: {
@@ -910,7 +860,6 @@ nav ul a.active {
                                         throw new Error(data.message || 'Failed to update follow status');
                                     }
                                     
-                                    // Update following count if unfollowing
                                     if (isFollowing) {
                                         const followingCountEl = document.querySelector('#following-stat .profile-stat-number');
                                         if (followingCountEl) {
@@ -922,7 +871,6 @@ nav ul a.active {
                                 .catch(error => {
                                     console.error('Follow/unfollow error:', error);
                                     
-                                    // Revert button state on error
                                     if (isFollowing) {
                                         this.textContent = 'Following';
                                         this.classList.add('is-following');

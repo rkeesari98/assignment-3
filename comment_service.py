@@ -64,14 +64,14 @@ class CommentService:
             if not comment_text:
                 raise ValueError("Comment text cannot be empty.")
             if len(comment_text) > 200:
-                raise ValueError("Comment text exceeds 200 characters.")
+                raise ValueError("Comment  exceeds 200 characters.")
 
             new_comment = Comment(
                 Id=str(uuid.uuid4()),
                 PostId=str(post_id),
                 Username=user.Username,
                 Text=comment_text,
-                Date=None  # Will be set with Firestore timestamp
+                Date=None   
             )
 
             comment_data = new_comment.dict()
@@ -83,4 +83,4 @@ class CommentService:
 
         except Exception as err:
             print("[Service] Error while creating comment:", err)
-            raise Exception("Comment creation failed.")
+            raise Exception(str(err))

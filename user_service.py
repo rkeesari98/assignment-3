@@ -1,4 +1,5 @@
 import datetime
+from typing import Dict, List
 from uuid import UUID, uuid4
 import uuid
 from google.auth.transport import requests
@@ -8,7 +9,7 @@ from google.cloud import firestore
 from pydantic import Json
 import starlette.status as status
 
-from models import Comment, PostSend, User, UserProfileUpdateInput
+from models import Comment, Post, PostResponse, PostSend, User, UserProfileUpdateInput
 
 
 firestore_db = firestore.Client()
@@ -56,7 +57,7 @@ class UserService:
         except Exception as error:
             print("error in user creation logic")
             print(str(error))
-            raise Exception(str(error))
+            
         
 
     @staticmethod
@@ -85,7 +86,6 @@ class UserService:
 
         except Exception as err:
             print(f"Service Failed to fetch : {str(err)}")
-            raise Exception(str(err))
 
     @staticmethod
     def update_user(user: User, profile_data: UserProfileUpdateInput):
@@ -108,7 +108,8 @@ class UserService:
 
             update_fields = {
                 "Username": username.lower(),
-                "Profile_Name": profile_name.lower()
+                "Profile_Name": profile_name.lower(),
+                "Bio": profile_data.bio
             }
 
             update_fields["Bio"] = profile_data.bio if profile_data.bio is not None else ""
@@ -132,7 +133,6 @@ class UserService:
 
             post_list = []
 
-            # Fetch profile user once outside loop
             user_result = firestore_db.collection("User").where("Username", "==", profile_username).limit(1).stream()
             user_docs = list(user_result)
             user_info = user_docs[0].to_dict() if user_docs else {}
@@ -140,19 +140,16 @@ class UserService:
             for doc in post_docs:
                 post_data = doc.to_dict()
 
-                # Convert UUID to string
                 post_data["Id"] = str(post_data.get("Id", ""))
                 post_data["Date"] = post_data.get("Date")
 
                 post_instance = PostSend(**post_data)
                 post_instance.User_Pic = user_info.get("Profile_Pic", "default_user.jpeg")
 
-                # Convert date to isoformat if it's a datetime object
                 if isinstance(post_instance.Date, datetime.datetime):
 
                     post_instance.Date = post_instance.Date.isoformat()
 
-                # Fetch comments for post
                 comment_query = firestore_db.collection("Comment").where("PostId", "==", str(post_instance.Id)).stream()
                 post_instance.Comments = [Comment(**c.to_dict()) for c in comment_query]
 
@@ -219,11 +216,9 @@ class UserService:
     @staticmethod
     def search_users(user: User, search_term: str):
         try:
-            # Normalize the search term
             normalized_term = search_term.lower()
             search_range_end = normalized_term + u'\uf8ff'
 
-            # Reference the user collection and apply the range query on Profile_Name
             user_collection = firestore_db.collection('User')
             matching_users = user_collection \
                 .where("Profile_Name", ">=", normalized_term) \
@@ -232,7 +227,6 @@ class UserService:
 
             results = []
 
-            # Prepare a set of usernames the current user is already following
             followed_usernames = set(
                 entry.get("Username") for entry in user.Following
             ) if user.Following else set()
@@ -241,7 +235,6 @@ class UserService:
                 user_data = doc.to_dict()
                 candidate_username = user_data.get("Username", "")
 
-                # Skip if the user is the one making the request
                 if candidate_username == user.Username:
                     continue
 
@@ -263,7 +256,6 @@ class UserService:
     @staticmethod
     def unfollow_user(current_user: User, target_username: str) -> Json:
         try:
-            # Fetch the user to unfollow from Firestore
             target_snapshot = next(
                 firestore_db.collection("User")
                 .where("Username", "==", target_username)
@@ -276,19 +268,16 @@ class UserService:
 
             target_user = User(**target_snapshot.to_dict())
 
-            # Filter out the target user from the current user's following list
             current_user.Following = [
                 entry for entry in current_user.Following 
                 if entry.get("Username") != target_username
             ]
 
-            # Filter out the current user from the target user's followers list
             target_user.Followers = [
                 entry for entry in target_user.Followers 
                 if entry.get("Username") != current_user.Username
             ]
 
-            # Commit updates to Firestore
             firestore_db.collection("User").document(str(current_user.Id)).update({
                 "Following": current_user.Following
             })
@@ -301,4 +290,133 @@ class UserService:
 
         except Exception as error:
             print(f"Error while unfollowing: {error}")
+            raise Exception(str(error))
+
+
+    @staticmethod
+    def get_followers(current_user: User, profile_username: str):
+        try:
+            user_result = firestore_db.collection("User").where("Username", "==", profile_username).limit(1).stream()
+            user_docs = list(user_result)
+            
+            if not user_docs:
+                raise Exception("User not found")
+            
+            user_info = user_docs[0].to_dict()
+            followers_list = user_info.get("Followers", [])
+            
+            followers_list.sort(key=lambda x: x.get("Date", 0), reverse=True)
+            
+            followers_data = []
+            for follower in followers_list:
+                follower_username = follower.get("Username", "")
+                
+                follower_doc = next(firestore_db.collection("User").where("Username", "==", follower_username).limit(1).stream(), None)
+                if follower_doc:
+                    follower_info = follower_doc.to_dict()
+                    
+                    is_following = any(
+                        entry.get("Username") == follower_username
+                        for entry in getattr(current_user, "Following", [])
+                    )
+                    
+                    followers_data.append({
+                        "username": follower_username,
+                        "profile_name": follower_info.get("Profile_Name", follower_username),
+                        "profile_pic": follower_info.get("Profile_Pic_Url", "default_user.jpeg"),
+                        "is_following": is_following,
+                        "timestamp": follower.get("Date", 0)
+                    })
+            
+            return {"followers": followers_data}
+        except Exception as error:
+            print("[UserService] Error in get_followers:", error)
+            raise Exception(str(error))
+
+    @staticmethod
+    def get_following(current_user: User, profile_username: str):
+        try:
+
+            user_result = firestore_db.collection("User").where("Username", "==", profile_username).limit(1).stream()
+            user_docs = list(user_result)
+            
+            if not user_docs:
+                raise Exception("User not found")
+            
+            user_info = user_docs[0].to_dict()
+            following_list = user_info.get("Following", [])
+            
+            following_list.sort(key=lambda x: x.get("Date", 0), reverse=True)
+            
+            following_data = []
+            for following in following_list:
+                following_username = following.get("Username", "")
+                
+                following_doc = next(firestore_db.collection("User").where("Username", "==", following_username).limit(1).stream(), None)
+                if following_doc:
+                    following_info = following_doc.to_dict()
+                    
+                    following_data.append({
+                        "username": following_username,
+                        "profile_name": following_info.get("Profile_Name", following_username),
+                        "profile_pic": following_info.get("Profile_Pic_Url", "default_user.jpeg"),
+                         "timestamp": following.get("Date", 0)
+                    })
+            
+            return {"following": following_data}
+        except Exception as error:
+            print("[UserService] Error in get_following:", error)
+            raise Exception(str(error))
+        
+    
+
+    @staticmethod
+    def get_posts(user: User) -> List[Post]:
+        try:
+            user_snapshot = next(
+                firestore_db.collection("User").where("Email", "==", user.Email).stream(), 
+                None
+            )
+
+            if not user_snapshot:
+                raise Exception("User not found.")
+
+            user_data = User(**user_snapshot.to_dict())
+
+            relevant_usernames = [user_data.Username] + [
+                entry.get("Username") for entry in user_data.Following or []
+            ]
+
+            post_docs = firestore_db.collection("Post") \
+                .where("Username", "in", relevant_usernames) \
+                .order_by("Date", direction=firestore.Query.DESCENDING) \
+                .limit(50) \
+                .stream()
+
+            posts = []
+
+            for doc in post_docs:
+                post_data = doc.to_dict()
+                post = PostResponse(**post_data)
+
+                post.Id = str(post.Id)
+
+                user_profile = firestore_db.collection("User").where("Username", "==", post.Username).limit(1).get()
+                if user_profile:
+                    post.User_Pic = user_profile[0].to_dict().get("Profile_Pic_Url", "default_user.jpeg")
+                else:
+                    post.User_Pic = "default_user.jpeg"
+
+                if isinstance(post.Date, datetime.datetime):
+                    post.Date = post.Date.isoformat()
+
+                comment_stream = firestore_db.collection("Comment").where("PostId", "==", post.Id).stream()
+                post.Comments = [Comment(**c.to_dict()) for c in comment_stream]
+
+                posts.append(post)
+
+            return posts
+
+        except Exception as error:
+            print(f"[UserService] Error in get_posts: {error}")
             raise Exception(str(error))

@@ -56,6 +56,67 @@
             padding-bottom: 40px;
         }
         
+
+
+
+
+
+.navbar-fixed {
+    height: 64px;
+    z-index: 997;
+}
+
+nav {
+    background-color: var(--theme-card);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    color: var(--theme-primary);
+    display: block !important;
+}
+
+nav .brand-logo {
+    color: var(--theme-primary);
+    font-weight: 700;
+    padding-left: 15px;
+}
+
+nav ul a {
+    color: var(--theme-text-dark);
+    transition: color 0.3s ease;
+}
+
+nav ul a:hover {
+    background-color: rgba(94, 53, 177, 0.1);
+    color: var(--theme-primary);
+}
+
+nav ul a.active {
+    color: var(--theme-primary);
+    font-weight: 500;
+    background-color: rgba(94, 53, 177, 0.05);
+}
+
+#sign-out, #desktop-logout {
+    margin: 0 10px;
+    background-color: var(--theme-primary);
+    color: white;
+    border-radius: 4px;
+    height: 36px;
+    line-height: 36px;
+    padding: 0 16px;
+    text-transform: uppercase;
+}
+
+#mobile-sign-out, #mobile-logout {
+    color: var(--theme-primary);
+    font-weight: 500;
+}
+
+@media only screen and (max-width: 992px) {
+    nav .brand-logo {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+}
         .card {
             border-radius: 12px;
             overflow: hidden;
@@ -83,7 +144,6 @@
             background-color: rgba(94, 53, 177, 0.1);
         }
         
-        /* Drop Zone Styles */
         .drop-zone {
             min-height: 300px;
             border: 2px dashed var(--theme-primary-light);
@@ -150,7 +210,6 @@
             visibility: hidden;
         }
 
-        /* Sidenav styles */
         .sidenav {
             width: 250px;
         }
@@ -166,7 +225,6 @@
             margin-right: 16px;
         }
         
-        /* Preloader */
         .progress {
             margin: 0;
             position: fixed;
@@ -196,9 +254,9 @@
                 <a href="#" data-target="mobile-nav" class="sidenav-trigger"><i class="material-icons">menu</i></a>
                 <ul class="right hide-on-med-and-down">
                     <li><a href="/"><i class="material-icons">home</i></a></li>
-                    <li><a href="/explore"><i class="material-icons">explore</i></a></li>
-                    <li><a href="/create" class="active"><i class="material-icons">add_box</i></a></li>
-                    <li><a href="/profile"><i class="material-icons">person</i></a></li>
+                    <li><a href="/search"><i class="material-icons">explore</i></a></li>
+                    <li><a href="/post/create" class="active"><i class="material-icons">add_box</i></a></li>
+                    <li><a href="/profile/self"><i class="material-icons">person</i></a></li>
                     <li><a href="#" id="desktop-logout" class="hidden"><i class="material-icons">exit_to_app</i></a></li>
                 </ul>
             </div>
@@ -324,7 +382,6 @@
     const imageUpload = document.getElementById('image-upload');
     const imagePreview = document.getElementById('image-preview');
     
-    // Caption counter functionality
     captionField.addEventListener('input', function() {
         const length = this.value.length;
         captionCounter.textContent = `${length}/${maxCaptionLength}`;
@@ -336,12 +393,10 @@
         }
     });
     
-    // Click on drop zone to trigger file input
     dropZone.addEventListener('click', () => {
         imageUpload.click();
     });
     
-    // Handle file selection via input
     imageUpload.addEventListener('change', function() {
         const file = this.files[0];
         if (file) {
@@ -350,7 +405,6 @@
         }
     });
     
-    // Drag and drop functionality
     dropZone.addEventListener('dragover', (e) => {
         e.preventDefault();
         dropZone.classList.add('highlight');
@@ -373,7 +427,6 @@
         }
     });
     
-    // Handle close button click
     document.querySelector('.thumb-close').addEventListener('click', function(e) {
         console.log("Close button clicked");
         imageUpload.value = '';
@@ -382,9 +435,7 @@
         imagePreview.style.backgroundImage = '';
     });
     
-    // Function to handle the image file
     function handleImageFile(file) {
-        // Check file type
         const fileType = file.type;
         console.log("File type:", fileType);
         
@@ -393,23 +444,18 @@
             return;
         }
         
-        // Create a new FileReader
         const reader = new FileReader();
         
-        // Set up the onload event
         reader.onload = function(e) {
             console.log("FileReader loaded successfully");
             
-            // Instead of setting background image, let's try creating an actual image element
             const img = document.createElement('img');
             img.src = e.target.result;
             img.style.width = '100%';
             img.style.height = 'auto';
             img.style.objectFit = 'contain';
             
-            // Clear any existing content in the preview
             imagePreview.innerHTML = '';
-            // Add the close button back
             const closeBtn = document.createElement('span');
             closeBtn.className = 'thumb-close';
             closeBtn.innerHTML = '<i class="material-icons">close</i>';
@@ -421,11 +467,9 @@
                 imagePreview.innerHTML = '';
             });
             
-            // Append the image and close button
             imagePreview.appendChild(img);
             imagePreview.appendChild(closeBtn);
             
-            // Hide the drop zone and show the preview
             console.log("Before changing visibility - dropZone hidden?", dropZone.classList.contains('hidden'));
             console.log("Before changing visibility - imagePreview hidden?", imagePreview.classList.contains('hidden'));
             
@@ -439,11 +483,9 @@
             console.log('Image preview displayed!');
         };
         
-        // Read the file as a data URL
         reader.readAsDataURL(file);
     }
     
-    // Form submission handler
     document.getElementById('create-post-form').addEventListener('submit', async function(e) {
         e.preventDefault();
         
@@ -508,7 +550,7 @@
             
             M.toast({html: 'Post created successfully!', classes: 'green'});
             setTimeout(() => {
-                window.location.href = '/profile';
+                window.location.href = '/profile/self';
             }, 1000);
             
         } catch (error) {

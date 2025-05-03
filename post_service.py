@@ -56,11 +56,9 @@ class PostService:
             post = post_query[0].to_dict()
             post['Id'] = str(post['Id'])
 
-            # Format the date if it's a datetime object
             if isinstance(post.get('Date'), datetime.datetime):
                 post['Date'] = post['Date'].isoformat()
 
-            # Attempt to get user's profile picture
             user_query = firestore_db.collection('User').where('Id', '==', post['Username']).limit(1).get()
             if user_query:
                 user_data = user_query[0].to_dict()
@@ -68,7 +66,6 @@ class PostService:
             else:
                 profile_pic_url = "default_user.jpeg"
 
-            # Fetch associated comments
             comment_query = firestore_db.collection('Comment').where('PostId', '==', post['Id']).stream()
             comment_list = []
             for comment in comment_query:
@@ -80,7 +77,6 @@ class PostService:
                     data['Date'] = data['Date'].isoformat()
                 comment_list.append(data)
 
-            # Combine all the details into a final dictionary
             result = {
                 "Id": post['Id'],
                 "Username": post['Username'],

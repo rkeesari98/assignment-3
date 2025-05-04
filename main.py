@@ -50,7 +50,6 @@ def root(request:Request):
             {"request":request}
         )
     except Exception as e:
-        print('chikki')
         print(e)
         return templates.TemplateResponse(
             "login.html",
